@@ -16,11 +16,11 @@ def create_app(test_config=None):
     # it is only here so that all of our local instances are on the
     # same page while testing
     app.config.from_mapping(
-        SECRET_KEY='dev',
-        MYSQL_HOST='165.227.119.138',
-        MYSQL_USER='ptremote',
-        MYSQL_PASS=b64decode('YmdoUlUkKjU2Nwo=').split('\n')[0],
-        MYSQL_DB='pt',
+        SECRET_KEY=b'dev',
+        MYSQL_HOST=b'165.227.119.138',
+        MYSQL_USER=b'ptremote',
+        MYSQL_PASS=b64decode(b'YmdoUlUkKjU2Nwo=').split(b'\n')[0],
+        MYSQL_DB=b'pt',
         CONFIGURED=True
     )
     # --- END WARNING SECTION ---
@@ -45,9 +45,16 @@ def create_app(test_config=None):
 
     else:
         # since the app is configured, import & register the blueprints
+        # add close_db() to the app context teardown
         from . import db
         db.init_app(app)
 
+        # add the user blueprint to the app
+        #from . import user
+        #app.register_blueprint(user.bp)
+
+
+        # TEMP: temporary index page
         @app.route('/')
         def testindex():
             cursor = db.get_db().cursor()
@@ -55,6 +62,6 @@ def create_app(test_config=None):
                 'SELECT * FROM Users'
             )
             user1 = cursor.fetchone()
-            return('TEST: database is working!')
+            return(b'TEST: database is working!')
 
     return app
