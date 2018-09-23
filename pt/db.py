@@ -1,5 +1,9 @@
 import pymysql
-# g is a request-unique global object where we'll store the db connection
+# g is an object global to the application context
+# where we'll store the db connection
+# NOTE: I'm still not entirely sure where the app context ends,
+#       but it seems it's NOT global to all users
+#       (e.g., User1 and User2 will have different g objects)
 from flask import current_app, g
 from flask.cli import with_appcontext
 import click
