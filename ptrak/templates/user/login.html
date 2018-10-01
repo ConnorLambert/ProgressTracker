@@ -6,14 +6,14 @@
 <head>
     <title> PTrak Login </title>
     <meta name="viewport" contnent="width=device-width, initial-scale=1.0" charset="utf-8" />
-    <link href="" rel="stylesheet" media="screen" /> 
+    <link href="" rel="stylesheet" media="screen" />
 </head>
 <body>
     <div>
         <h1> Please Login: </h1>
         <br />
         <form action="" method="post">
-            <input type="text" placeholder="Username" name="username" value="{{ request.form.username }}" />
+            <input type="text" placeholder="Email" name="email" value="{{ request.form.username }}" />
             <input type="password" placeholder="Password" name="password" value="{{ request.form.password }}" />
             <input class="btn btn-default" type="submit" value="Login" />
         </form>
@@ -21,7 +21,7 @@
             <p class="error"><strong>Error: </strong> {{error}} </p>
         {% endif %}
 
-        {% for message in get_flashed_messages() %} 
+        {% for message in get_flashed_messages() %}
             {{ message }}
         {% endfor %}
     </div>
