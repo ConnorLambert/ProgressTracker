@@ -33,13 +33,13 @@ def load_logged_in_user():
     if uid is None:
         g.user = None
     else:
-        dbcursor = get_db()
+        dbcursor = get_db().cursor()
         dbcursor.execute(
-            'SELECT * FROM Users WHERE uid = ?', (uid,)
+            'SELECT * FROM Users WHERE uid = (%s)', (uid,)
         )
         g.user = dbcursor.fetchone()
 
-def login_required(view, level=0):
+def login_required(view=None, level=None):
     """
     We need some way to restrict users to only those pages they
     have the authority to access. It wouldn't make sense for
@@ -58,9 +58,10 @@ def login_required(view, level=0):
     Then it will take appropriate action if the user fails to
     meet the qualifications.
     """
-
+    if view is None:
+        return functools.partial(login_required, level=level)
     @functools.wraps(view)
-    def wrapped_view(**kwargs):
+    def wrapped_view(*args, **kwargs):
         # first, send non-logged-in users to the login page
         if g.user is None:
             return redirect(url_for('user.login'))
@@ -72,7 +73,8 @@ def login_required(view, level=0):
             # FIXME: since my.dashboard doesn't exist yet, we'll
             #        redirect to a test page
             #return(redirect(url_for('my.dashboard')))
-            return(redirect(url_for('index')))
+            return(redirect(url_for('testindex')))
+        return view(*args, **kwargs)
     return wrapped_view
 
 # actual route is /user/login
@@ -83,13 +85,13 @@ def login():
     """
     # if attempting to log in with credentials
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
 
         error = None
         dbcursor = get_db().cursor()
         dbcursor.execute(
-            'SELECT * FROM Users WHERE email = (%s)', (username,)
+            'SELECT * FROM Users WHERE email = (%s)', (email,)
         )
         user_result = dbcursor.fetchone()
 
@@ -100,7 +102,7 @@ def login():
 
         if error is None:
             session.clear()
-            session['user'] = username
+            session['uid'] = user_result['uid']
             return redirect(url_for('testindex'))
 
         flash(error)

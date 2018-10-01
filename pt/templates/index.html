@@ -7,9 +7,13 @@
 	<div class="container">
 		<h1> PTrak User Homepage </h1>
 		<br>
-		{{ email }}
+		{% if g.user %}
+		Logged in as {{ g.user['email'] }}.
 		<p> Click <a href="/user/logout">here</a> to logout.</p>
-
+		{% else %}
+		Not logged in.
+		<p> Click <a href="/user/login">here</a> to login.</p>
+		{% endif %}
 
 		<!-- Displays a 'Login Successful' message if the user just logged in -->
 		{% for message in get_flashed_messages() %}

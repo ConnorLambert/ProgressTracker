@@ -1,6 +1,6 @@
 """ """
 import os
-from flask import Flask, render_template, session
+from flask import Flask, render_template, session, g
 from base64 import b64decode
 
 def create_app(test_config=None):
@@ -60,5 +60,11 @@ def create_app(test_config=None):
                 return render_template('index.html', email=session['user'])
             except:
                 return render_template('index.html', email='')
+
+
+        @app.route('/junktest')
+        @user.login_required(level=7)
+        def junktest():
+            return "Hey, you made it!"
 
     return app
