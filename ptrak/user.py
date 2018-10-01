@@ -39,7 +39,7 @@ def load_logged_in_user():
         )
         g.user = dbcursor.fetchone()
 
-def login_required(view=None, level=None):
+def login_required(view=None, level=0):
     """
     We need some way to restrict users to only those pages they
     have the authority to access. It wouldn't make sense for
@@ -109,12 +109,43 @@ def login():
                 'UPDATE Users SET lastlogin=CURRENT_TIMESTAMP WHERE uid=(%s)',
                 (session['uid'],)
             )
+            firstname = user_result['firstname']
+            lastname = user_result['lastname']
+            if password == firstname[0]+lastname:
+                return redirect(url_for('user.resetPwd'))
             return redirect(url_for('testindex'))
 
         flash(error)
 
     # if called with GET, just show the login page
     return render_template('user/login.html')
+
+@bp.route('/resetPwd', methods=('GET', 'POST'))
+@login_required#(level=0)
+def resetPwd():
+        if request.method == 'POST':
+            password1 = request.form['password1']
+            password2 = request.form['password2']
+
+            error = None
+            #checks to make sure fields are assigned properly
+            if password1 != password2:
+                error = 'Your password needs to be the same for both text boxes!'
+
+
+            #insert new user
+            if error is None:
+                dbcursor = get_db().cursor()
+                dbcursor.execute(
+                    'UPDATE Users SET '
+                    'password = %s WHERE uid = %s', 
+                    (generate_password_hash(password1), session['uid'])
+                )
+                #return redirect(url_for('my.dashboard'))
+                flash('Successful Password Reset')
+                return redirect(url_for('testindex'))
+            flash(error)
+        return render_template('user/resetPwd.html')
 
 @bp.route('/logout')
 def logout():
@@ -136,17 +167,17 @@ def new():
 
         error = None
         #checks to make sure fields are assigned properly
-        if firstname == None:
+        if firstname is None:
             error = 'Missing first name!'
-        elif lastname == None:
+        elif lastname is None:
             error = 'Missing last name!'
-        elif email == None:
+        elif email is None:
             error = 'Missing an email!'
-        elif level == None:
+        elif level is None:
             error = 'No level assigned!'
 
         #insert new user
-        if error == None:
+        if error is None:
             dbcursor = get_db().cursor()
             dbcursor.execute(
                 'INSERT INTO Users (firstname, lastname, email, password, level, projects) '
