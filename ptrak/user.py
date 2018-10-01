@@ -14,7 +14,7 @@ from flask import (
 # and get two different results, courtesy of salting
 from werkzeug.security import check_password_hash, generate_password_hash
 # import our get_db() function
-from pt.db import get_db
+from ptrak.db import get_db
 
 # init the blueprint object
 bp = Blueprint('user', __name__, url_prefix='/user')
