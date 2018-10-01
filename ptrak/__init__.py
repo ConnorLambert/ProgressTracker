@@ -1,6 +1,6 @@
 """ """
 import os
-from flask import Flask, render_template, session, g
+from flask import Flask, render_template, session, g, url_for
 from base64 import b64decode
 
 def create_app(test_config=None):
@@ -21,6 +21,7 @@ def create_app(test_config=None):
         MYSQL_USER=b'ptremote',
         MYSQL_PASS=b64decode(b'YmdoUlUkKjU2Nwo=').split(b'\n')[0],
         MYSQL_DB=b'pt',
+        TIME_FMT=b'%Y-%m-%d %H:%M', # e.g., 2018-10-01 15:45
         CONFIGURED=True
     )
     # --- END WARNING SECTION ---
@@ -63,8 +64,11 @@ def create_app(test_config=None):
 
 
         @app.route('/junktest')
-        @user.login_required(level=7)
+        @user.login_required(level=5)
         def junktest():
-            return "Hey, you made it!"
+
+            return "Hey, you made it!" + " Your last login was " \
+                + g.user['lastlogin'].strftime(app.config['TIME_FMT'].decode("utf-8")) \
+                + '<br /><a href="/">Return to home page</a>'
 
     return app
