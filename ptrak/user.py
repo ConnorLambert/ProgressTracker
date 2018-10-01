@@ -120,3 +120,17 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for('testindex'))
+
+@bp.route('/new', methods=('GET', 'POST'))
+@login_required(level=3)    # this level is open for debate
+def new():
+    if request.method == 'POST':
+        firstname = request.form['firstname']
+        lastname = request.form['lastname']
+        email = request.form['email']
+        level = request.form['level']
+        projects = request.form['projects']
+
+        error = None
+
+    return render_template('user/new.html')
