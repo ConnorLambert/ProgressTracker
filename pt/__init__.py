@@ -1,6 +1,6 @@
 """ """
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, session
 from base64 import b64decode
 
 def create_app(test_config=None):
@@ -50,18 +50,15 @@ def create_app(test_config=None):
         db.init_app(app)
 
         # add the user blueprint to the app
-        #from . import user
-        #app.register_blueprint(user.bp)
+        from . import user
+        app.register_blueprint(user.bp)
 
 
-        # TEMP: temporary index page
         @app.route('/')
         def testindex():
-            cursor = db.get_db().cursor()
-            cursor.execute(
-                'SELECT * FROM Users'
-            )
-            user1 = cursor.fetchone()
-            return(b'TEST: database is working!')
+            try:
+                return render_template('index.html', email=session['user'])
+            except:
+                return render_template('index.html', email='')
 
     return app

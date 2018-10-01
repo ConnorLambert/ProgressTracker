@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title> PTrak Home</title>
+</head>
+<body>
+	<div class="container">
+		<h1> PTrak User Homepage </h1>
+		<br>
+		{{ email }}
+		<p> Click <a href="/user/logout">here</a> to logout.</p>
+
+
+		<!-- Displays a 'Login Successful' message if the user just logged in -->
+		{% for message in get_flashed_messages() %}
+			{{ message }}
+		{% endfor %}
+	</div>
+</body>
+</html>
