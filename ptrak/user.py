@@ -129,8 +129,33 @@ def new():
         lastname = request.form['lastname']
         email = request.form['email']
         level = request.form['level']
-        projects = request.form['projects']
+        try:
+            projects = request.form['projects']
+        except:
+            projects = None
 
         error = None
+        #checks to make sure fields are assigned properly
+        if firstname == None:
+            error = 'Missing first name!'
+        elif lastname == None:
+            error = 'Missing last name!'
+        elif email == None:
+            error = 'Missing an email!'
+        elif level == None:
+            error = 'No level assigned!'
+
+        #insert new user
+        if error == None:
+            dbcursor = get_db().cursor()
+            dbcursor.execute(
+                'INSERT INTO Users (firstname, lastname, email, password, level, projects) '
+                'VALUES (%s, %s, %s, %s, %s, %s)',
+                (firstname, lastname, email, generate_password_hash(firstname[0]+lastname), level, projects,)
+            )
+            #return redirect(url_for('my.dashboard'))
+            flash('Successful User Added')
+            return redirect(url_for('testindex'))
+        flash(error)
 
     return render_template('user/new.html')
