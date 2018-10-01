@@ -81,7 +81,7 @@ def login_required(view=None, level=None):
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     """
-    Either display the
+    Either display the login page or allow a user to log in.
     """
     # if attempting to log in with credentials
     if request.method == 'POST':
@@ -101,8 +101,14 @@ def login():
             error = 'Incorrect password.'
 
         if error is None:
+            # empty the session and store the user's uid in it
             session.clear()
             session['uid'] = user_result['uid']
+            # update the Users table to show that the user has logged in recently
+            dbcursor.execute(
+                'UPDATE Users SET lastlogin=CURRENT_TIMESTAMP WHERE uid=(%s)',
+                (session['uid'],)
+            )
             return redirect(url_for('testindex'))
 
         flash(error)
