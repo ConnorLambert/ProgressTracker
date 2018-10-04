@@ -54,8 +54,13 @@ def create_app(test_config=None):
         from . import user
         app.register_blueprint(user.bp)
 
+        # add the my blueprint to the app
         from . import my
         app.register_blueprint(my.bp)
+
+        #add the project blueprint to the app
+        from . import project
+        app.register_blueprint(project.bp)
 
 
         @app.route('/')
