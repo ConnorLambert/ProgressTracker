@@ -70,10 +70,7 @@ def login_required(view=None, level=0):
         # the required permission level
         if g.user['level'] < level:
             flash('You don\'t have permission to view that page.')
-            # FIXME: since my.dashboard doesn't exist yet, we'll
-            #        redirect to a test page
-            #return(redirect(url_for('my.dashboard')))
-            return(redirect(url_for('testindex')))
+            return(redirect(url_for('my.dashboard')))
         return view(*args, **kwargs)
     return wrapped_view
 
@@ -138,12 +135,11 @@ def resetPwd():
                 dbcursor = get_db().cursor()
                 dbcursor.execute(
                     'UPDATE Users SET '
-                    'password = %s WHERE uid = %s', 
+                    'password = %s WHERE uid = %s',
                     (generate_password_hash(password1), session['uid'])
                 )
-                #return redirect(url_for('my.dashboard'))
-                flash('Successful Password Reset')
-                return redirect(url_for('testindex'))
+                flash('Password successfully reset!')
+                return redirect(url_for('my.dashboard'))
             flash(error)
         return render_template('user/resetPwd.html')
 
