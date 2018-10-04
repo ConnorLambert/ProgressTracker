@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>PTrak: Messages</title>
+  </head>
+  <body>
+    <div class="message_log">
+    <h1> Inbox: </h1>
+
+    {% for message in messages %}
+        {{ 'Sender: ' + message.firstname + ' ' + message.lastname + ' | ' + 'Content: ' + message.content + ' | ' + 'Date Sent: ' + message.date_sent.strftime('%m/%d/%y') }}
+    {% endfor %}
+
+  </div>
+
+      <form action="" method="POST" name="create_new_msg">
+        <h1> New Message: </h1>
+        <div>
+          <label>Send To: <select name="recipient">
+            {% for user in users %}
+              <option value="{{user.uid}}">  {{ user.firstname + ' ' + user.lastname + ': ' + user.email }} </option>
+            {% endfor %}
+          </select>
+          </label>
+        </div>
+          <textarea name="content">
+          </textarea>
+          <br/>
+          <input type="submit" value="Send Message"/>
+      </form>
+
+  </body>
+</html>
+
+
+<!-- @bp.route('/my/messages', methods=('GET', 'POST'))
+     @login_required#(level=0)
+     def messages():
+      if request.method=='POST':
+          source = *- TARGET CURRENT USER'S ID HERE -*
+          recipient = request.form['recipient'] <- Will need to target their ID
+          content = request.from['content']
+          date_sent = CURRENT_TIMESTAMP
+
+          error = None
+
+          if content is None:
+            error = 'No message content.'
+          # Possibly run more checks for errors in creation of new message
+
+        if error is None:
+          dbcursor = get_db().cursor()
+          dbcursor.execute(
+            *- INSERT NEW MESSAGE INTO TABLE -*
+          )
+          flash('Message Sent')
+          return redirect(url_for('testindex')) #Possibly redirect back to messages on success?
+        flash(error)
+        return render_template('/my/messages.html') #Show messages again on error?
+
+-->
