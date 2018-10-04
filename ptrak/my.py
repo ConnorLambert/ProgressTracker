@@ -26,11 +26,12 @@ def messages():
     """
     # load some items from the DB to pass to the template
     dbcursor = get_db().cursor()
-    # get all messages addressed to the current user
+    # get all messages addressed to the current user, newest first
     dbcursor.execute(
         'SELECT mid, source, firstname, lastname, email, content, date_sent'
         ' FROM Messages JOIN Users ON Messages.source = Users.uid '
-        ' WHERE Messages.destination = (%s)',
+        ' WHERE Messages.destination = (%s)'
+        ' ORDER BY date_sent DESC',
         (session['uid'],)
     )
     messages = dbcursor.fetchall()
@@ -42,3 +43,19 @@ def messages():
     users = dbcursor.fetchall()
 
     return render_template('my/messages.html', messages=messages, users=users)
+
+@bp.route('/dashboard')
+@login_required
+def dashboard():
+    """
+    Most of a user's time will be spent on this route.
+    That said, the view itself is pretty simple -
+    it just gets a few values out of the database
+    and renders the dashboard template.
+    """
+    # get a db connection
+    dbcursor = get_db().cursor()
+    # QUESTION what exactly do we want to show on the dashboard?
+    # TODO finish this
+    return "Incomplete!"
+    
