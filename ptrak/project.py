@@ -41,7 +41,7 @@ def project(pid):
     # it's just gathered in case it's needed
     # first get the details for the project (with creator info)
     num = dbcursor.execute(
-        'SELECT uid, firstname, lastname, lastlogin, title, description, date_due'
+        'SELECT pid, uid, firstname, lastname, lastlogin, title, description, date_due'
         ' FROM Projects JOIN Users ON owner=uid'
         ' WHERE pid=(%s)',
         (pid,)
@@ -53,7 +53,7 @@ def project(pid):
 
     # then get the announcements with author info
     dbcursor.execute(
-        'SELECT uid, firstname, lastname, content, date_made, lastlogin'
+        'SELECT aid, uid, firstname, lastname, content, date_made, lastlogin'
         ' FROM Announcements JOIN Users ON author=uid'
         ' WHERE pid=(%s)',
         (pid,)
@@ -62,7 +62,7 @@ def project(pid):
 
     # next get the task list and submitter info
     dbcursor.execute(
-        'SELECT uid, firstname, lastname, title, status, date_submitted, due_date, date_updated, tags, description'
+        'SELECT tid, uid, firstname, lastname, title, status, date_submitted, due_date, date_updated, tags, description'
         ' FROM Tasks JOIN Users ON Tasks.creator=Users.uid'
         ' WHERE Tasks.pid=(%s)',
         (pid,)
@@ -102,3 +102,13 @@ def edit(pid):
         return redirect(url_for('my.dashboard'))
 
     return 'STUB: editing project {}'.format(pid)
+
+@bp.route('/<int:pid>/announce')
+@login_required(level=3)
+def announce(pid):
+    # involvement check: is the user actually assigned to this project?
+    if str(pid) not in g.user['projects'].split(';'):
+        flash('You aren\'t assigned to that project.')
+        return redirect(url_for('my.dashboard'))
+
+    return 'STUB: adding announcement to project {}'.format(pid)
