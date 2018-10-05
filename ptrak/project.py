@@ -29,7 +29,9 @@ def project(pid):
     including tasks and announcements
     for the given pid.
     """
+    # involvement check: is the user actually assigned to this project?
     if str(pid) not in g.user['projects'].split(';'):
+        flash('You aren\'t assigned to that project.')
         return redirect(url_for('my.dashboard'))
     # get a cursor to the DB
     dbcursor = get_db().cursor()
@@ -37,7 +39,19 @@ def project(pid):
     # to mash them all into one massive table
     # note that not all information *has* to be used;
     # it's just gathered in case it's needed
-    # first get the announcements with author info
+    # first get the details for the project (with creator info)
+    num = dbcursor.execute(
+        'SELECT uid, firstname, lastname, lastlogin, title, description, date_due'
+        ' FROM Projects JOIN Users ON owner=uid'
+        ' WHERE pid=(%s)',
+        (pid,)
+    )
+    thisproject = dbcursor.fetchone()
+    if thisproject is None:
+        flash('That project doesn\'t exist.')
+        return redirect(url_for('my.dashboard'))
+
+    # then get the announcements with author info
     dbcursor.execute(
         'SELECT uid, firstname, lastname, content, date_made, lastlogin'
         ' FROM Announcements JOIN Users ON author=uid'
@@ -55,33 +69,36 @@ def project(pid):
     )
     tasks = dbcursor.fetchall()
 
-    # and now get the details for the project (with creator info)
-    dbcursor.execute(
-        'SELECT uid, firstname, lastname, lastlogin, title, description, date_due'
-        ' FROM Projects JOIN Users ON owner=uid'
-        ' WHERE pid=(%s)',
-        (pid,)
-    )
-    thisproject = dbcursor.fetchone()
+
 
     # and pass all of this data to the template
     return render_template('project/project.html', announcements=announcements, tasks=tasks, thisproject=thisproject)
 
-@bp.route('/new')
+@bp.route('/new', methods=('GET', 'POST'))
 @login_required(level=3)
 def new():
+    if request.method == 'POST':
+        pass
+
+    #return render_template('project/new.html')
     return 'STUB: adding new project'
 
 @bp.route('/<int:pid>/newtask')
 @login_required
 def newtask(pid):
+    # involvement check: is the user actually assigned to this project?
     if str(pid) not in g.user['projects'].split(';'):
+        flash('You aren\'t assigned to that project.')
         return redirect(url_for('my.dashboard'))
+
     return 'STUB: adding new task to project {}'.format(pid)
 
 @bp.route('/<int:pid>/edit')
 @login_required(level=3)
 def edit(pid):
+    # involvement check: is the user actually assigned to this project?
     if str(pid) not in g.user['projects'].split(';'):
+        flash('You aren\'t assigned to that project.')
         return redirect(url_for('my.dashboard'))
+
     return 'STUB: editing project {}'.format(pid)
