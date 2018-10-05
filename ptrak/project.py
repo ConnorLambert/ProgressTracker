@@ -29,6 +29,8 @@ def project(pid):
     including tasks and announcements
     for the given pid.
     """
+    if str(pid) not in g.user['projects'].split(';'):
+        return redirect(url_for('my.dashboard'))
     # get a cursor to the DB
     dbcursor = get_db().cursor()
     # get db data in several stages, resisting the urge
@@ -73,9 +75,13 @@ def new():
 @bp.route('/<int:pid>/newtask')
 @login_required
 def newtask(pid):
+    if str(pid) not in g.user['projects'].split(';'):
+        return redirect(url_for('my.dashboard'))
     return 'STUB: adding new task to project {}'.format(pid)
 
 @bp.route('/<int:pid>/edit')
 @login_required(level=3)
 def edit(pid):
+    if str(pid) not in g.user['projects'].split(';'):
+        return redirect(url_for('my.dashboard'))
     return 'STUB: editing project {}'.format(pid)
