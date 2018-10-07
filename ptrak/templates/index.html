@@ -9,6 +9,9 @@
 		<br>
 		{% if g.user %}
 		Logged in as {{ g.user['email'] }}.
+		{% if g.user['level'] == 5 %}
+		<p> <a href="/user/new">Add User</a> </p>
+		{% endif %} 
 		<p> Click <a href="/user/logout">here</a> to logout.</p>
 		{% else %}
 		Not logged in.
