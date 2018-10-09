@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title> My Projects</title>
+</head>
+<body>
+	<div class="container">
+		<h1> My Projects </h1>
+
+    {% for project in userProjects %}
+        <pre class="tab"><font size="6"><a href="/project/{{project.pid}}">{{project.title}}</a>{{'  ' + 'Due Date:'}}</font><font size="5">{{project.date_due}}</font></pre>
+         <!-- Title is a clickable link that will direct to project page, currently set as /project/(pid here)  !-->
+    {% endfor %}
+
+		<br>
+	</div>
+</body>
+</html>
+
+<a href="/my/dashboard">Return to Dashboard</a>
