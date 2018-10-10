@@ -38,7 +38,8 @@ def messages():
 
     # get a list of users for addressing outgoing messages
     dbcursor.execute(
-        'SELECT uid, firstname, lastname, email FROM Users ORDER BY lastname, firstname ASC'
+        'SELECT uid, firstname, lastname, email FROM Users WHERE uid <> %s'
+        ' ORDER BY lastname, firstname ASC', (g.user['uid'],)
     )
     users = dbcursor.fetchall()
 
@@ -87,4 +88,4 @@ def myProjects():
         flash(error)
         return redirect(url_for('my.dashboard'))
 
-    return render_template('my/myProjects.html', userProjects=userProjects)    
+    return render_template('my/myProjects.html', userProjects=userProjects)
