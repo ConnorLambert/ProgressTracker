@@ -65,6 +65,10 @@ def login_required(view=None, level=0):
         # first, send non-logged-in users to the login page
         if g.user is None:
             return redirect(url_for('user.login'))
+        # check whether user is disabled
+        if g.user['level'] < 0:
+            # TEMP: this should instead redirect to a 'pit' page with the same info
+            return "TEMP: You've been bad, and therefore your account is disabled."
 
         # if the user is logged in, make sure they have
         # the required permission level
