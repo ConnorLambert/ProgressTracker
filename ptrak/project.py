@@ -7,6 +7,7 @@ from flask import (
 )
 from ptrak.db import get_db
 from ptrak.user import login_required
+import time, datetime   # 
 
 bp = Blueprint('project', __name__, url_prefix='/project')
 
@@ -69,19 +70,44 @@ def project(pid):
     )
     tasks = dbcursor.fetchall()
 
-
-
     # and pass all of this data to the template
     return render_template('project/project.html', announcements=announcements, tasks=tasks, thisproject=thisproject)
 
 @bp.route('/new', methods=('GET', 'POST'))
 @login_required(level=3)
 def new():
+    """
+    Add a new project.
+    """
+    # get the db cursor at the start; it'll be needed throughout
+    dbcursor = get_db().cursor()
+
     if request.method == 'POST':
-        pass
+        # get the form elements
+        owner = request.form['owner']
+        description = request.form['description']
+        date_due = request.form['date_due']
+        name = request.form['name']
+
+        # TODO: validate the elements
+        error = None
+
+        # and do the insertion and redirect
+        if error is None:
+            dbcursor.execute(
+                'INSERT INTO Projects (owner, description, date_due, name)'
+                ' VALUES (%s, %s, %s, %s)',
+                (owner, description, date_due, name,)
+            )
+            # return the user to the newly-inserted project
+            dbcursor.execute(
+                'SELECT LAST_INSERT_ID() AS pid'
+            )
+            newpid = cursor.fetchone()
+            return redirect(url_for('project.project', pid=res['pid']))
 
     #return render_template('project/new.html')
-    return 'STUB: adding new project'
+    return 'INCOMPLETE (template required): adding new project'
 
 @bp.route('/<int:pid>/newtask')
 @login_required
