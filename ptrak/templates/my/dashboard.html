@@ -1,14 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title> Dashboard </title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %} Dashboard {% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
 	<div class="container">
 		<h1> Dashboard </h1>
 		<br>
 		<p><a href="/my/myProjects">My Projects</a></p>
 		<p><a href="/my/messages">Messages</a></p>
 	</div>
-</body>
-</html>
+{% endblock %}

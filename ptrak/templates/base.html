@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+	<title>{% block title %}{% endblock %} - PTrak</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+<link rel="stylesheet" href="{{ url_for('static', filename='navbar.css')}}">
+<link rel="stylesheet" href="navbar.css">
+
+{% block includes %}{% endblock %}
+
+	<ul id="nav">
+		<li><a class="nolink"> PTrak</a></li>
+		{% if g.user %}
+		<li><a href="{{ url_for('my.dashboard') }}"> Dashboard </a></li>
+		{% endif %}
+	</ul>
+
+	<div id="spacing"></div>
+	<section class="content">
+		<header>
+			{% block header %}{% endblock %}
+		</header>
+		{% for message in get_flashed_messages() %}
+			<div class="flash">{{ message }} </div>
+		{% endfor %}
+		{% block content %}{% endblock %}

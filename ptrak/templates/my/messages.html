@@ -1,17 +1,23 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %} Log In {% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
     <title>PTrak: Messages</title>
-  </head>
-  <body>
     <div class="message_log">
     <h1> Inbox: </h1>
-
+<table>
     {% for message in messages %}
-        {{ 'Sender: ' + message.firstname + ' ' + message.lastname + ' | ' + 'Content: ' + message.content + ' | ' + 'Date Sent: ' + message.date_sent.strftime('%m/%d/%y') }}
+      <tr>
+        <th> Date Sent: </th> <td> {{ message.date_sent.strftime('%m/%d/%y')}} </td>
+        <th> Sender: </th> <td> {{ message.firstname + ' ' + message.lastname }}</td>
+        <th> Content: </th> <td> {{ message.content }} </td>
+        <th> Actions: </th> <td> <input type="button" value="Open"/> <input type="button" value="Delete"/></td>
+      </tr>
     {% endfor %}
-
+</table>
   </div>
 
       <form action="" method="POST" name="create_new_msg">
@@ -24,15 +30,11 @@
           </select>
           </label>
         </div>
-          <textarea name="content">
-          </textarea>
+          <textarea name="content" rows="15" cols="49"></textarea>
           <br/>
           <input type="submit" value="Send Message"/>
       </form>
-
-  </body>
-</html>
-
+{% endblock %}
 
 <!-- @bp.route('/my/messages', methods=('GET', 'POST'))
      @login_required#(level=0)

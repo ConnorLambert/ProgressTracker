@@ -1,14 +1,10 @@
-﻿<!-- Below is the bare-bones login skeleton that will go in our templates -->
-<!-- request.form and the if statement will not work currectly until ran with flask -->
-<!DOCTYPE html>
+{% extends 'base.html' %}
 
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title> PTrak: Login </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8" />
-    <link href="" rel="stylesheet" media="screen" />
-</head>
-<body>
+{% block header %}
+  <h1>{% block title %} Log In {% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
     <div>
         <h1> Please Login: </h1>
         <br />
@@ -25,5 +21,4 @@
             {{ message }}
         {% endfor %}
     </div>
-</body>
-</html>
+{% endblock %}
