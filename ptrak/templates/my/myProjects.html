@@ -6,7 +6,6 @@
 
 {% block content %}
 	<div class="container">
-		<h1> My Projects </h1>
 
     {% for project in userProjects %}
         <pre class="tab"><font size="6"><a href="/project/{{project.pid}}">{{project.title}}</a>{{'  ' + 'Due Date:'}}</font><font size="5">{{project.date_due}}</font></pre>

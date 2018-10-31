@@ -1,27 +1,15 @@
 {% extends 'base.html' %}
 
 {% block header %}
-	<h1>{% block title %} Home {% endblock %}</h1>
+	<h1>{% block title %} Ptrak User Homepage {% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
 	<div class="container">
-		<h1> PTrak User Homepage </h1>
 		<br>
 		{% if g.user %}
-		Logged in as {{ g.user['email'] }}.
-		{% if g.user['level'] == 5 %}
-		<p> <a href="/user/new">Add User</a> </p>
-		{% endif %}
-		<p> Click <a href="/user/logout">here</a> to logout.</p>
-		{% else %}
-		Not logged in.
-		<p> Click <a href="/user/login">here</a> to login.</p>
+		Logged in as {{ g.user['email'] }}
 		{% endif %}
 
-		<!-- Displays a 'Login Successful' message if the user just logged in -->
-		{% for message in get_flashed_messages() %}
-			{{ message }}
-		{% endfor %}
 	</div>
 {% endblock %}
