@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1> <font size="8">{% block title %}{{thisproject.title}} {% endblock %}</font></h1>
+  {{thisproject.description}}<br><br>
+  {{'Project Owner: ' + thisproject.firstname + ' ' + thisproject.lastname}}<br>
+  {{'Due date: ' + thisproject.date_due}}<br>
+{% endblock %}
+
+{% block content %}
+	<div class="announcements">
+    <h1> <font size="6"> Announcements </font></h1>
+
+    {% for a in announcements %}
+        <font size='5'><strong>{{a.content}}</strong></font> <br>
+        Created by {{a.firstname + ' ' + a.lastname}} on {{' ' + a.date_made}}
+    {% endfor %}
+
+		<br>
+	</div>
+
+  <div class="tasks">
+    <h1> <font size="6"> Tasks </font></h1>
+
+    {% for t in tasks %}
+    <form action="" method="POST" name="update task">
+        <pre><font size='5'><strong>{{t.title}}</strong></font> {{'            ' + t.status }} <select name="status">
+          <option value="" selected disabled hidden>Update status</option>
+          <option value="new"> new </option>
+          <option value="in progress"> in progress </option>
+          <option value="under review"> under review </option>
+          <option value="complete"> complete </option>
+        </select>
+        <button name="taskid" type="submit" value={{t.tid}}>Submit</button>
+      </pre> <br>
+      </form>
+
+        Last updated by {{t.firstname + ' ' + t.lastname}} on {{' ' + t.date_updated}} <br>
+    {% endfor %}
+
+		<br>
+	</div>
+{% endblock %}
