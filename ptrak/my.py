@@ -56,22 +56,6 @@ def dashboard():
     """
     # get a db connection
     dbcursor = get_db().cursor()
-    # QUESTION what exactly do we want to show on the dashboard?
-    # TODO finish this
-    return render_template('my/dashboard.html')
-
-@bp.route('/myProjects')
-@login_required
-def myProjects():
-    """
-    Page designed to show all projects that user is a part of.
-    Function will need updating to match the user id to the
-    appropriate projects once the database schema is updated.
-    Can be left seperate or possibly integrated directly
-    into the dashboard. Named myProjects for now to avoid
-    potential confusion.
-    """
-    dbcursor = get_db().cursor()
 
     error = None
     dbcursor = get_db().cursor()
@@ -79,13 +63,15 @@ def myProjects():
     dbcursor.execute(
     #Will need to be changed to search by uid once db schema is updated
     #Currently just grabs projects with owner as 1
-        'SELECT * FROM Projects WHERE owner = 1'
+        'SELECT * FROM Involvements JOIN Projects ON Involvements.pid = Projects.pid '
+        'WHERE uid = (%s) ',
+        (session['uid'],)
     )
     userProjects = dbcursor.fetchall()
 
     if userProjects is None:
         error = 'User belongs to no projects!'
         flash(error)
-        return redirect(url_for('my.dashboard'))
+        return redirect(url_for('testindex'))
 
-    return render_template('my/myProjects.html', userProjects=userProjects)
+    return render_template('my/dashboard.html', userProjects=userProjects)

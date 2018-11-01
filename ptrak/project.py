@@ -7,7 +7,7 @@ from flask import (
 )
 from ptrak.db import get_db
 from ptrak.user import login_required
-import time, datetime   # 
+import time, datetime   #
 
 bp = Blueprint('project', __name__, url_prefix='/project')
 
@@ -22,7 +22,7 @@ def index():
     """
     return redirect(url_for('my.dashboard'))
 
-@bp.route('/<int:pid>')
+@bp.route('/<int:pid>', methods=('GET', 'POST'))
 @login_required
 def project(pid):
     """
@@ -30,48 +30,90 @@ def project(pid):
     including tasks and announcements
     for the given pid.
     """
-    # involvement check: is the user actually assigned to this project?
-    if str(pid) not in g.user['projects'].split(';'):
-        flash('You aren\'t assigned to that project.')
-        return redirect(url_for('my.dashboard'))
-    # get a cursor to the DB
-    dbcursor = get_db().cursor()
-    # get db data in several stages, resisting the urge
-    # to mash them all into one massive table
-    # note that not all information *has* to be used;
-    # it's just gathered in case it's needed
-    # first get the details for the project (with creator info)
-    num = dbcursor.execute(
-        'SELECT pid, uid, firstname, lastname, lastlogin, title, description, date_due'
-        ' FROM Projects JOIN Users ON owner=uid'
-        ' WHERE pid=(%s)',
-        (pid,)
-    )
-    thisproject = dbcursor.fetchone()
-    if thisproject is None:
-        flash('That project doesn\'t exist.')
-        return redirect(url_for('my.dashboard'))
 
-    # then get the announcements with author info
-    dbcursor.execute(
-        'SELECT aid, uid, firstname, lastname, content, date_made, lastlogin'
-        ' FROM Announcements JOIN Users ON author=uid'
-        ' WHERE pid=(%s)',
-        (pid,)
-    )
-    announcements = dbcursor.fetchall()
+    if request.method == 'POST':
+        statusupdate = request.form['status']
+        taskupdate = request.form['taskid']
 
-    # next get the task list and submitter info
-    dbcursor.execute(
-        'SELECT tid, uid, firstname, lastname, title, status, date_submitted, due_date, date_updated, tags, description'
-        ' FROM Tasks JOIN Users ON Tasks.creator=Users.uid'
-        ' WHERE Tasks.pid=(%s)',
-        (pid,)
-    )
-    tasks = dbcursor.fetchall()
+        error = None
 
-    # and pass all of this data to the template
-    return render_template('project/project.html', announcements=announcements, tasks=tasks, thisproject=thisproject)
+        if statusupdate is None:
+            error = "No status update"
+        if taskupdate is None:
+            error = "No task id"
+
+        if error is None:
+            dbcursor = get_db().cursor()
+            dbcursor.execute(
+                ' UPDATE Tasks'
+                ' SET status = (%s)'
+                ' WHERE tid = (%s)',
+                (statusupdate, taskupdate,)
+            )
+            flash('Task status updated.')
+            return redirect(url_for('project.project', pid=pid))
+
+        elif error is not None:
+            flash('Error updating task status.')
+            return redirect(url_for('project.project', pid=pid))
+
+    else:
+        dbcursor = get_db().cursor()
+
+        # get a cursor to the DB
+        dbcursor = get_db().cursor()
+        # get db data in several stages, resisting the urge
+        # to mash them all into one massive table
+        # note that not all information *has* to be used;
+        # it's just gathered in case it's needed
+        # first get the details for the project (with creator info)
+        num = dbcursor.execute(
+            'SELECT pid, uid, firstname, lastname, lastlogin, title, description, CAST(date_due AS char) AS date_due'
+            ' FROM Projects JOIN Users ON owner=uid'
+            ' WHERE pid=(%s)',
+            (pid,)
+        )
+        thisproject = dbcursor.fetchone()
+
+        if thisproject is None:
+            flash('That project doesn\'t exist.')
+            return redirect(url_for('my.dashboard'))
+
+        # involvement check: is the user actually assigned to this project?
+        dbcursor.execute(
+            ' SELECT *'
+            ' FROM Involvements'
+            ' WHERE (Involvements.uid = (%s)) AND (Involvements.pid = (%s))'
+            ' ORDER BY Involvements.pid DESC',
+            (session['uid'], pid,)
+        )
+
+        projectscheck = dbcursor.fetchone()
+
+        if projectscheck is None:
+            flash('You aren\'t assigned to that project.')
+            return redirect(url_for('my.dashboard'))
+
+        # then get the announcements with author info
+        dbcursor.execute(
+            'SELECT aid, uid, firstname, lastname, content, CAST(date_made AS char) AS date_made, lastlogin'
+            ' FROM Announcements JOIN Users ON author=uid'
+            ' WHERE pid=(%s)',
+            (pid,)
+        )
+        announcements = dbcursor.fetchall()
+
+        # next get the task list and submitter info
+        dbcursor.execute(
+            'SELECT tid, uid, firstname, lastname, title, status, date_submitted, due_date, CAST(date_updated AS char) AS date_updated, tags, description'
+            ' FROM Tasks JOIN Users ON Tasks.creator=Users.uid'
+            ' WHERE Tasks.pid=(%s)',
+            (pid,)
+        )
+        tasks = dbcursor.fetchall()
+
+        # and pass all of this data to the template
+        return render_template('project/project.html', announcements=announcements, tasks=tasks, thisproject=thisproject)
 
 @bp.route('/new', methods=('GET', 'POST'))
 @login_required(level=3)
