@@ -6,8 +6,16 @@
 
 {% block content %}
 	<div class="container">
+		<h3> My Projects </h3>
+
+    {% for project in userProjects %}
+        <pre class="tab"><font size="6"><a href="/project/{{project.pid}}">{{project.title}}</a>{{'  ' + 'Due Date:'}}</font><font size="5">{{project.date_due}}</font></pre>
+         <!-- Title is a clickable link that will direct to project page, currently set as /project/(pid here)  !-->
+    {% endfor %}
+
 		<br>
-		<p><a href="/my/myProjects">My Projects</a></p>
-		<p><a href="/my/messages">Messages</a></p>
+    <br>
+
+    <a href="/my/messages">Messages</a>
 	</div>
 {% endblock %}
