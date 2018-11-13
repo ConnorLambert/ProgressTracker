@@ -46,7 +46,7 @@ def project(pid):
             dbcursor = get_db().cursor()
             dbcursor.execute(
                 ' UPDATE Tasks'
-                ' SET status = (%s)'
+                ' SET status = (%s), date_updated = CURRENT_TIMESTAMP'
                 ' WHERE tid = (%s)',
                 (statusupdate, taskupdate,)
             )
@@ -93,6 +93,8 @@ def project(pid):
         if projectscheck is None:
             flash('You aren\'t assigned to that project.')
             return redirect(url_for('my.dashboard'))
+        else:
+            g.rank = projectscheck['rank']
 
         # then get the announcements with author info
         dbcursor.execute(
@@ -107,7 +109,8 @@ def project(pid):
         dbcursor.execute(
             'SELECT tid, uid, firstname, lastname, title, status, date_submitted, due_date, CAST(date_updated AS char) AS date_updated, tags, description'
             ' FROM Tasks JOIN Users ON Tasks.creator=Users.uid'
-            ' WHERE Tasks.pid=(%s)',
+            ' WHERE Tasks.pid=(%s)'
+            ' ORDER BY Tasks.date_updated DESC',
             (pid,)
         )
         tasks = dbcursor.fetchall()
@@ -126,30 +129,44 @@ def new():
 
     if request.method == 'POST':
         # get the form elements
-        owner = request.form['owner']
+        owner = session['uid']
         description = request.form['description']
         date_due = request.form['date_due']
         name = request.form['name']
 
         # TODO: validate the elements
         error = None
+        #Converts the due date string to a useable Timestamp format
+        tsdue = time.strftime('%Y-%m-%d %H:%M:%S', datetime.datetime.strptime(date_due, "%Y-%m-%d").timetuple())
 
         # and do the insertion and redirect
         if error is None:
+
+            #Add the project to the project table
             dbcursor.execute(
-                'INSERT INTO Projects (owner, description, date_due, name)'
+                'INSERT INTO Projects (owner, description, date_due, title)'
                 ' VALUES (%s, %s, %s, %s)',
-                (owner, description, date_due, name,)
+                (owner, description, tsdue, name,)
             )
-            # return the user to the newly-inserted project
+
+            #Grab newest pid added to the Project table
             dbcursor.execute(
                 'SELECT LAST_INSERT_ID() AS pid'
             )
-            newpid = cursor.fetchone()
-            return redirect(url_for('project.project', pid=res['pid']))
+            newpid = dbcursor.fetchone()
+
+            #Add the user and project to the Involvements TABLE, set creator to project rank 3
+            dbcursor.execute(
+                'INSERT INTO Involvements (uid, pid, rank)'
+                ' VALUES (%s, %s, %s)',
+                (session['uid'], newpid['pid'], 3,)
+            )
+
+            # return the user to the newly-inserted project
+            return redirect(url_for('project.project', pid=newpid['pid']))
 
     #return render_template('project/new.html')
-    return 'INCOMPLETE (template required): adding new project'
+    return render_template('project/new.html')
 
 @bp.route('/<int:pid>/newtask')
 @login_required
@@ -180,3 +197,62 @@ def announce(pid):
         return redirect(url_for('my.dashboard'))
 
     return 'STUB: adding announcement to project {}'.format(pid)
+
+@bp.route('/<int:pid>/settings', methods=('GET', 'POST'))
+@login_required(level=3)
+def settings(pid):
+    if request.method == 'POST':
+        return 'STUB: editing project settings {}'.format(pid)
+
+    else:
+
+        dbcursor = get_db().cursor()
+
+        num = dbcursor.execute(
+            'SELECT pid, uid, firstname, lastname, lastlogin, title, description, CAST(date_due AS char) AS date_due'
+            ' FROM Projects JOIN Users ON owner=uid'
+            ' WHERE pid=(%s)',
+            (pid,)
+        )
+        thisproject = dbcursor.fetchone()
+
+        if thisproject is None:
+            flash('That project doesn\'t exist.')
+            return redirect(url_for('my.dashboard'))
+
+        # involvement check: is the user actually assigned to this project?
+        dbcursor.execute(
+            ' SELECT *'
+            ' FROM Involvements'
+            ' WHERE (Involvements.uid = (%s)) AND (Involvements.pid = (%s))'
+            ' ORDER BY Involvements.pid DESC',
+            (session['uid'], pid,)
+        )
+
+        projectscheck = dbcursor.fetchone()
+
+        if projectscheck is None or projectscheck['uid'] < 3:
+            flash('You don\'t have permission to edit this project.')
+            return redirect(url_for('my.dashboard'))
+
+        # then get the announcements with author info
+        dbcursor.execute(
+            'SELECT aid, uid, firstname, lastname, content, CAST(date_made AS char) AS date_made, lastlogin'
+            ' FROM Announcements JOIN Users ON author=uid'
+            ' WHERE pid=(%s)',
+            (pid,)
+        )
+        announcements = dbcursor.fetchall()
+
+        # next get the task list and submitter info
+        dbcursor.execute(
+            'SELECT tid, uid, firstname, lastname, title, status, date_submitted, due_date, CAST(date_updated AS char) AS date_updated, tags, description'
+            ' FROM Tasks JOIN Users ON Tasks.creator=Users.uid'
+            ' WHERE Tasks.pid=(%s)'
+            ' ORDER BY Tasks.date_updated DESC',
+            (pid,)
+        )
+        tasks = dbcursor.fetchall()
+
+        # and pass all of this data to the template
+        return render_template('project/settings.html', announcements=announcements, tasks=tasks, thisproject=thisproject)
