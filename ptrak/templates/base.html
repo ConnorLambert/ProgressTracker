@@ -7,7 +7,7 @@
 {% block includes %}{% endblock %}
 
 	<div class="nav">
-			<a class="logo" href="{{ url_for('testindex') }}"> PTrak </a> <!-- WILL NEED TO CHANGE TO WELCOME PAGE -->
+			<a class="logo" href="{{ url_for('testindex') }}"> PTrak </a> <!-- WILL NEED TO CHANGE TO WELCOME PAGE-->
 			{% if g.user %}
 			<a href="{{ url_for('my.dashboard') }}"> Dashboard </a>
 			<a href="{{ url_for('my.messages') }}"> Messages </a>

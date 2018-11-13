@@ -49,6 +49,7 @@ def create_app(test_config=None):
         # add close_db() to the app context teardown
         from . import db
         db.init_app(app)
+        app.jinja_env.globals.update(mystify=db.mystify, demystify=db.demystify)
 
         # add the user blueprint to the app
         from . import user

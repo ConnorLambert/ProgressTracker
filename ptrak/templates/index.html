@@ -8,7 +8,7 @@
 	<div class="container">
 		<br>
 		{% if g.user %}
-		Logged in as {{ g.user['email'] }}
+		Logged in as {{ demystify(g.user['email']) }}
 		{% endif %}
 
 	</div>

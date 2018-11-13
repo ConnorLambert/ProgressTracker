@@ -11,7 +11,7 @@
     {% for message in messages %}
       <tr>
         <th> Date Sent: </th> <td> {{ message.date_sent.strftime('%m/%d/%y')}} </td>
-        <th> Sender: </th> <td> {{ message.firstname + ' ' + message.lastname }}</td>
+        <th> Sender: </th> <td> {{ demystify(message.firstname) + ' ' + demystify(message.lastname) }}</td>
         <th> Content: </th> <td> {{ message.content }} </td>
         <th> Actions: </th> <td> <input type="button" value="Open"/> <input type="button" value="Delete"/></td>
       </tr>
@@ -24,7 +24,7 @@
         <div>
           <label>Send To: <select name="recipient">
             {% for user in users %}
-              <option value="{{user.uid}}">  {{ user.firstname + ' ' + user.lastname + ': ' + user.email }} </option>
+              <option value="{{user.uid}}">  {{ demystify(user.firstname) + ' ' + demystify(user.lastname) + ': ' + demystify(user.email) }} </option>
             {% endfor %}
           </select>
           </label>
@@ -58,6 +58,7 @@
           dbcursor = get_db().cursor()
           dbcursor.execute(
             *- INSERT NEW MESSAGE INTO TABLE -*
+
           )
           flash('Message Sent')
           return redirect(url_for('testindex')) #Possibly redirect back to messages on success?

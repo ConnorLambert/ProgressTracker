@@ -14,7 +14,7 @@ from flask import (
 # and get two different results, courtesy of salting
 from werkzeug.security import check_password_hash, generate_password_hash
 # import our get_db() function
-from ptrak.db import get_db
+from ptrak.db import get_db, mystify, demystify
 
 # init the blueprint object
 bp = Blueprint('user', __name__, url_prefix='/user')
@@ -92,7 +92,7 @@ def login():
         error = None
         dbcursor = get_db().cursor()
         dbcursor.execute(
-            'SELECT * FROM Users WHERE email = (%s)', (email,)
+            'SELECT * FROM Users WHERE email = (%s)', (mystify(email),)
         )
         user_result = dbcursor.fetchone()
 
@@ -110,8 +110,8 @@ def login():
                 'UPDATE Users SET lastlogin=CURRENT_TIMESTAMP WHERE uid=(%s)',
                 (session['uid'],)
             )
-            firstname = user_result['firstname']
-            lastname = user_result['lastname']
+            firstname = demystify(user_result['firstname'])
+            lastname = demystify(user_result['lastname'])
             if password == firstname[0]+lastname:
                 return redirect(url_for('user.resetPwd'))
             return redirect(url_for('testindex'))
@@ -182,7 +182,7 @@ def new():
             dbcursor.execute(
                 'INSERT INTO Users (firstname, lastname, email, password, level, projects) '
                 'VALUES (%s, %s, %s, %s, %s, %s)',
-                (firstname, lastname, email, generate_password_hash(firstname[0]+lastname), level, projects,)
+                (mystify(firstname), mystify(lastname), mystify(email), generate_password_hash(firstname[0]+lastname), level, projects,)
             )
             #return redirect(url_for('my.dashboard'))
             flash('Successful User Added')

@@ -3,7 +3,7 @@
 {% block header %}
   <h1> <font size="8">{% block title %}{{thisproject.title}} {% endblock %}</font></h1>
   {{thisproject.description}}<br><br>
-  {{'Project Owner: ' + thisproject.firstname + ' ' + thisproject.lastname}}<br>
+  {{'Project Owner: ' + demystify(thisproject.firstname) + ' ' + demystify(thisproject.lastname)}}<br>
   {{'Due date: ' + thisproject.date_due}}<br>
 {% endblock %}
 
@@ -13,7 +13,7 @@
 
     {% for a in announcements %}
         <font size='5'><strong>{{a.content}}</strong></font> <br>
-        Created by {{a.firstname + ' ' + a.lastname}} on {{' ' + a.date_made}}
+        Created by {{demystify(a.firstname) + ' ' + demystify(a.lastname)}} on {{' ' + a.date_made}}
     {% endfor %}
 
 		<br>
@@ -35,7 +35,7 @@
       </pre> <br>
       </form>
 
-        Last updated by {{t.firstname + ' ' + t.lastname}} on {{' ' + t.date_updated}} <br>
+        Last updated by {{demystify(t.firstname) + ' ' + demystify(t.lastname)}} on {{' ' + t.date_updated}} <br>
     {% endfor %}
 
 		<br>

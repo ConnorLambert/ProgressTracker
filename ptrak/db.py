@@ -7,6 +7,7 @@ import pymysql
 from flask import current_app, g, abort
 from flask.cli import with_appcontext
 import click
+import base64
 
 def get_db():
     """
@@ -51,3 +52,11 @@ def init_app(app):
     initialization in ``create_app()``.
     """
     app.teardown_appcontext(close_db)
+"""
+Protect the user - email and username
+"""
+def mystify(input):
+    return base64.b64encode(input.encode('utf-8'))
+
+def demystify(input):
+    return base64.b64decode(input).decode('utf-8')
