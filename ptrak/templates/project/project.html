@@ -28,8 +28,11 @@
           <option value="" selected disabled hidden>Update status</option>
           <option value="new"> new </option>
           <option value="in progress"> in progress </option>
-          <option value="under review"> under review </option>
-          <option value="complete"> complete </option>
+          {% if g.rank < 3 %}
+            <option value="under review"> complete </option>
+          {% else %}
+            <option value="complete"> complete </option>
+          {% endif %}
         </select>
         <button name="taskid" type="submit" value={{t.tid}}>Submit</button>
       </pre> <br>
@@ -39,5 +42,8 @@
     {% endfor %}
 
 		<br>
+
+    <a href="{{thisproject.pid}}/settings">Project Settings</a>
+    <a href="new">New Project</a>
 	</div>
 {% endblock %}
