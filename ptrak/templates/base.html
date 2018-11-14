@@ -6,23 +6,30 @@
 
 {% block includes %}{% endblock %}
 
-	<div class="nav">
-			<a class="logo" href="{{ url_for('testindex') }}"> PTrak </a> <!-- WILL NEED TO CHANGE TO WELCOME PAGE-->
-			{% if g.user %}
-			<a href="{{ url_for('my.dashboard') }}"> Dashboard </a>
-			<a href="{{ url_for('my.messages') }}"> Messages </a>
-			{% endif %}
-		<div class="nav-right">
-		{% if g.user.level == 5 %}
-			<a href="{{ url_for('user.new') }}"> New User </a>
-		{% endif %}
+	<ul id="nav">
+		<li><a class="brandImg" href="{{url_for('testindex')}}"> PTrak </a></li>
 		{% if g.user %}
-			<a href="{{ url_for('user.logout') }}"> Logout </a>
-		{% else %}
-			<a href="{{ url_for('user.login') }}"> Login </a>
-		{% endif %}
+		<li><a href="{{url_for('my.dashboard')}}"> Dashboard </a></li>
+		<li><a href="{{url_for('my.messages')}}"> Messages </a></li>
+
+		<div class="navRight">
+			<div class="dropdown">
+				<li class="dropdown-btn"><a href="#"> User Settings </a></li>
+				<div class="dropdown-content">
+					{% if g.user.level == 5%}
+					<a href="{{url_for('user.new')}}"> Create New User </a>
+					{% endif %}
+					<a href="{{url_for('user.resetPwd')}}"> Change Password </a>
+				</div>
+			</div>
+			<li><a href="{{url_for('user.logout')}}"> Logout </a></li>
 		</div>
-	</div>
+		{% else %}
+		<div class="navRight">
+			<li><a href="{{url_for('user.login')}}"> Login </a></li>
+		</div>
+		{% endif %}
+	</ul>
 
 	<div id="spacing"></div>
 	<section class="content">
