@@ -15,6 +15,7 @@ from flask import (
 from werkzeug.security import check_password_hash, generate_password_hash
 # import our get_db() function
 from ptrak.db import get_db, mystify, demystify
+from time import time
 
 # init the blueprint object
 bp = Blueprint('user', __name__, url_prefix='/user')
@@ -38,6 +39,15 @@ def load_logged_in_user():
             'SELECT * FROM Users WHERE uid = (%s)', (uid,)
         )
         g.user = dbcursor.fetchone()
+
+@bp.after_app_request
+def update_lastrequest(response):
+    """
+    Update ``session['lastrequest']`` after each app request
+    to the current timestamp.
+    """
+    session['lastrequest'] = int(time())
+    return response
 
 def login_required(view=None, level=0):
     """
@@ -69,12 +79,20 @@ def login_required(view=None, level=0):
         if g.user['level'] < 0:
             # TEMP: this should instead redirect to a 'pit' page with the same info
             return "TEMP: You've been bad, and therefore your account is disabled."
+        # make sure the user's session hasn't timed out
+        lastrequest = session.get('lastrequest')
+        now = int(time())
+        if (now - lastrequest)/60 > 30:
+            flash('Session timed out.')
+            return redirect(url_for('user.logout'))
 
         # if the user is logged in, make sure they have
         # the required permission level
         if g.user['level'] < level:
             flash('You don\'t have permission to view that page.')
             return(redirect(url_for('my.dashboard')))
+
+        #
         return view(*args, **kwargs)
     return wrapped_view
 
