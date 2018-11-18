@@ -10,7 +10,11 @@
 		<li><a class="brandImg" href="{{url_for('testindex')}}"> PTrak </a></li>
 		{% if g.user %}
 		<li><a href="{{url_for('my.dashboard')}}"> Dashboard </a></li>
+		{% if len(g.unreadmsgs) > 0 %}
+		<li><a href="{{url_for('my.messages')}}"> Messages ({{ len(g.unreadmsgs) }})</a></li>
+		{% else %}
 		<li><a href="{{url_for('my.messages')}}"> Messages </a></li>
+		{% endif %}
 
 		<div class="navRight">
 			<div class="dropdown">

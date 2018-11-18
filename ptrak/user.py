@@ -39,6 +39,10 @@ def load_logged_in_user():
             'SELECT * FROM Users WHERE uid = (%s)', (uid,)
         )
         g.user = dbcursor.fetchone()
+        dbcursor.execute(
+            'SELECT * FROM Messages WHERE destination = (%s) AND unread=1', (uid,)
+        )
+        g.unreadmsgs = dbcursor.fetchall()
 
 @bp.after_app_request
 def update_lastrequest(response):
