@@ -87,13 +87,13 @@ def login_required(view=None, level=0):
         lastrequest = session.get('lastrequest')
         now = int(time())
         if (now - lastrequest)/60 > 30:
-            flash('Session timed out.')
+            flash('Session timed out.', category='info')
             return redirect(url_for('user.logout'))
 
         # if the user is logged in, make sure they have
         # the required permission level
         if g.user['level'] < level:
-            flash('You don\'t have permission to view that page.')
+            flash('You don\'t have permission to view that page.', category='danger')
             return(redirect(url_for('my.dashboard')))
 
         #
@@ -138,7 +138,7 @@ def login():
                 return redirect(url_for('user.resetPwd'))
             return redirect(url_for('testindex'))
 
-        flash(error)
+        flash(error, category='warning')
 
     # if called with GET, just show the login page
     return render_template('user/login.html')
@@ -164,9 +164,9 @@ def resetPwd():
                     'password = %s WHERE uid = %s',
                     (generate_password_hash(password1), session['uid'])
                 )
-                flash('Password successfully reset!')
+                flash('Password successfully reset!', category='success')
                 return redirect(url_for('testindex'))
-            flash(error)
+            flash(error, category='warning')
         return render_template('user/resetPwd.html')
 
 @bp.route('/logout')
@@ -207,8 +207,8 @@ def new():
                 (mystify(firstname), mystify(lastname), mystify(email), generate_password_hash(firstname[0]+lastname), level, projects,)
             )
             #return redirect(url_for('my.dashboard'))
-            flash('Successful User Added')
+            flash('Successful User Added', category='info')
             return redirect(url_for('testindex'))
-        flash(error)
+        flash(error, category='warning')
 
     return render_template('user/new.html')

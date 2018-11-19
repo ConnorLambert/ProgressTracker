@@ -71,7 +71,7 @@ def dashboard():
 
     if userProjects is None:
         error = 'User belongs to no projects!'
-        flash(error)
+        flash(error, category='danger')
         return redirect(url_for('testindex'))
 
     return render_template('my/dashboard.html', userProjects=userProjects)
