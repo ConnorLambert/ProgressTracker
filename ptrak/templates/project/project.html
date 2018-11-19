@@ -7,12 +7,23 @@
   {{'Due date: ' + thisproject.date_due}}<br>
 {% endblock %}
 
+{% block pagenav %}
+  <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="dd_prmenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Project Menu</a>
+    <div class="dropdown-menu" aria-labelledby="dd_prmenu">
+      <a class="dropdown-item" href="{{ url_for('project.settings', pid=thisproject.pid)}}">Edit project settings</a>
+      <a class="dropdown-item" href="#">Make announcement</a>
+      <a class="dropdown-item" href="#">[placeholder]</a>
+    </div>
+  </li>
+{% endblock %}
+
 {% block content %}
 	<div class="announcements">
-    <h1> <font size="6"> Announcements </font></h1>
+    <h2>Announcements</h2>
 
     {% for a in announcements %}
-        <font size='5'><strong>{{a.content}}</strong></font> <br>
+        <strong>{{a.content}}</strong> <br>
         Created by {{demystify(a.firstname) + ' ' + demystify(a.lastname)}} on {{' ' + a.date_made}}
     {% endfor %}
 
@@ -20,11 +31,26 @@
 	</div>
 
   <div class="tasks">
-    <h1> <font size="6"> Tasks </font></h1>
+    <h2>Tasks</h2>
 
     {% for t in tasks %}
+    <div class="container-fluid">
+      <div class="card">
+        <h5 class="card-header">{{ t.title }}</h5>
+        <div class="card-body">
+          <h5 class="card-title">{{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
+          <p class="card-text">{{ t.description }}</p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+        <div class="card-footer text-muted">
+          Last updated {{ t.date_updated }}
+        </div>
+      </div>
+    </div>
+    <!-- XXX
+    <div class="container-fluid"
     <form action="" method="POST" name="update task">
-        <pre><font size='5'><strong>{{t.title}}</strong></font> {{'            ' + t.status }} <select name="status">
+        <strong>{{t.title}}</strong> {{'            ' + t.status }} <select name="status">
           <option value="" selected disabled hidden>Update status</option>
           <option value="new"> new </option>
           <option value="in progress"> in progress </option>
@@ -35,15 +61,13 @@
           {% endif %}
         </select>
         <button name="taskid" type="submit" value={{t.tid}}>Submit</button>
-      </pre> <br>
+      <br>
       </form>
 
         Last updated by {{demystify(t.firstname) + ' ' + demystify(t.lastname)}} on {{' ' + t.date_updated}} <br>
+      </div>
+      -->
     {% endfor %}
-
 		<br>
-
-    <a href="{{thisproject.pid}}/settings">Project Settings</a>
-    <a href="new">New Project</a>
 	</div>
 {% endblock %}
