@@ -1,20 +1,18 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %} Dashboard {% endblock %}</h1>
-{% endblock %}
+
+  {% block title %}Dashboard{% endblock %}
+
 
 {% block content %}
-	<div class="container">
-		<h3> My Projects </h3>
+		<h2> My Projects </h2>
 
     {% for project in userProjects %}
-        <pre class="tab"><font size="6"><a href="/project/{{project.pid}}">{{project.title}}</a>{{'  ' + 'Due Date:'}}</font><font size="5">{{project.date_due}}</font></pre>
+        <a href="/project/{{project.pid}}">{{project.title}}</a>{{'  ' + 'Due Date:'}}{{project.date_due}}
          <!-- Title is a clickable link that will direct to project page, currently set as /project/(pid here)  !-->
     {% endfor %}
 
 		<br>
     <br>
 
-	</div>
 {% endblock %}

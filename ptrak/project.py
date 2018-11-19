@@ -76,7 +76,7 @@ def project(pid):
         thisproject = dbcursor.fetchone()
 
         if thisproject is None:
-            flash('That project doesn\'t exist.')
+            flash('That project doesn\'t exist.', category='danger')
             return redirect(url_for('my.dashboard'))
 
         # involvement check: is the user actually assigned to this project?
@@ -173,7 +173,7 @@ def new():
 def newtask(pid):
     # involvement check: is the user actually assigned to this project?
     if str(pid) not in g.user['projects'].split(';'):
-        flash('You aren\'t assigned to that project.')
+        flash('You aren\'t assigned to that project.', category='danger')
         return redirect(url_for('my.dashboard'))
 
     return 'STUB: adding new task to project {}'.format(pid)
@@ -217,7 +217,7 @@ def settings(pid):
         thisproject = dbcursor.fetchone()
 
         if thisproject is None:
-            flash('That project doesn\'t exist.')
+            flash('That project doesn\'t exist.', category='danger')
             return redirect(url_for('my.dashboard'))
 
         # involvement check: is the user actually assigned to this project?

@@ -1,46 +1,87 @@
 <!DOCTYPE html>
 	<title>{% block title %}{% endblock %} - PTrak</title>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
-<link rel="stylesheet" href="{{ url_for('static', filename='navbar.css')}}">
+<link rel="stylesheet" href="{{ url_for('static', filename='local.css')}}">
 
+<!-- Required meta tags for Bootstrap -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 {% block includes %}{% endblock %}
 
-	<ul id="nav">
-		<li><a class="brandImg" href="{{url_for('testindex')}}"> PTrak </a></li>
-		{% if g.user %}
-		<li><a href="{{url_for('my.dashboard')}}"> Dashboard </a></li>
-		{% if len(g.unreadmsgs) > 0 %}
-		<li><a href="{{url_for('my.messages')}}"> Messages ({{ len(g.unreadmsgs) }})</a></li>
-		{% else %}
-		<li><a href="{{url_for('my.messages')}}"> Messages </a></li>
-		{% endif %}
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="#">PTrak</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+				{% if g.user %}
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('my.dashboard') }}">Dashboard</a>
+          </li>
+          <li class="nav-item">
+						{% if len(g.unreadmsgs) %}
+            <a class="nav-link" href="{{ url_for('my.messages') }}">Messages <span class="badge badge-danger">{{ len(g.unreadmsgs) }}</span></a>
+						{% else %}
+						<a class="nav-link" href="{{ url_for('my.messages') }}">Messages</a>
+						{% endif %}
+          </li>
+        </ul>
+				{% endif %}
 
-		<div class="navRight">
-			<div class="dropdown">
-				<li class="dropdown-btn"><a href="#"> User Settings </a></li>
-				<div class="dropdown-content">
-					{% if g.user.level == 5%}
-					<a href="{{url_for('user.new')}}"> Create New User </a>
-					{% endif %}
-					<a href="{{url_for('user.resetPwd')}}"> Change Password </a>
-				</div>
-			</div>
-			<li><a href="{{url_for('user.logout')}}"> Logout </a></li>
-		</div>
-		{% else %}
-		<div class="navRight">
-			<li><a href="{{url_for('user.login')}}"> Login </a></li>
-		</div>
-		{% endif %}
-	</ul>
+				<!--- right-aligned items, such as login/logout and page-specific menus -->
+				<ul class="navbar-nav mr-right">
+				{% block pagenav %}{% endblock %}
+
+				{% if g.user %}
+				{% if g.user.level >= 3 %}
+				<li class="nav-item dropdown">
+			    <a class="nav-link dropdown-toggle" href="#" id="dd_mgmt" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Management</a>
+			    <div class="dropdown-menu" aria-labelledby="dd_mgmt">
+			      <a class="dropdown-item" href="{{ url_for('user.new') }}">New user</a>
+			      <a class="dropdown-item" href="{{ url_for('project.new') }}">New Project</a>
+			      <a class="dropdown-item" href="#">[placeholder]</a>
+			    </div>
+			  </li>
+				{% endif %}
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="dd_user" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ demystify(g.user['firstname']) }}  {{ demystify(g.user['lastname']) }}</a>
+					<div class="dropdown-menu" aria-labelledby="dd_user">
+						<a class="dropdown-item" href="{{ url_for('user.resetPwd') }}">Update password</a>
+						<a class="dropdown-item" href="{{ url_for('user.logout') }}">Logout</a>
+					</div>
+				</li>
+				{% else %}
+				<li class="nav-item">
+					<a class="nav-link" href="{{ url_for('user.login') }}">Login</a>
+				</li>
+				{% endif %}
+				</ul>
+      </div>
+    </nav>
+
 
 	<div id="spacing"></div>
 	<section class="content">
 		<header>
 			{% block header %}{% endblock %}
 		</header>
-		{% for message in get_flashed_messages() %}
-			<div class="flash">{{ message }} </div>
+		{% for (category, message) in get_flashed_messages(with_categories=True) %}
+			<div class="alert alert-{{category}}" role="alert">{{ message }}
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    			<span aria-hidden="true">&times;</span>
+  			</button>
+			</div>
 		{% endfor %}
+
 		{% block content %}{% endblock %}
+
+
+	</section>

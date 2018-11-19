@@ -1,24 +1,32 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %} Log In {% endblock %}</h1>
+
+
+
+{% block includes %}
+<link href="https://getbootstrap.com/docs/4.1/examples/sign-in/signin.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
+  <div class="text-center" style="max-width:330px; position:absolute; top:0; bottom:0;left:0;right:0; margin: 7% auto auto auto;">
+      <form class="form-signin" method="post">
+        <h1 class="h3 mb-3 font-weight-normal">{% block title %}Log In{% endblock %}</h1>
+        <label for="email" class="sr-only">Email address</label>
+        <input type="email" name="email" id="email" class="form-control" placeholder="Email address" required autofocus>
+        <label for="password" class="sr-only">Password</label>
+        <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+        <div class="checkbox mb-3">
+          <label>
+            <input type="checkbox" value="remember-me"> Remember me
+          </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
+
+      </form>
     <div>
-        <h1> Please Login: </h1>
-        <br />
-        <form action="" method="post">
-            <input type="text" placeholder="Email" name="email" value="{{ request.form.username }}" />
-            <input type="password" placeholder="Password" name="password" value="{{ request.form.password }}" />
-            <input class="btn btn-default" type="submit" value="Login" />
-        </form>
         {% if error %}
             <p class="error"><strong>Error: </strong> {{error}} </p>
         {% endif %}
-
-        {% for message in get_flashed_messages() %}
-            {{ message }}
-        {% endfor %}
     </div>
 {% endblock %}
