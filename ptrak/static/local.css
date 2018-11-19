@@ -1,0 +1,4 @@
+body {
+  padding-top:60px; /* protect the body from being covered by the navbar */
+}
+/* TODO: make it more responsive */
