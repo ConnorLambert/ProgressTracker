@@ -28,7 +28,7 @@ def messages():
     dbcursor = get_db().cursor()
     # get all messages addressed to the current user, newest first
     dbcursor.execute(
-        'SELECT mid, source, firstname, lastname, email, content, date_sent'
+        'SELECT mid, source, firstname, lastname, email, content, date_sent, subject'
         ' FROM Messages JOIN Users ON Messages.source = Users.uid '
         ' WHERE Messages.destination = (%s)'
         ' ORDER BY date_sent DESC',

@@ -1,41 +1,51 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %} Messages {% endblock %}</h1>
-{% endblock %}
+
+  {% block title %} Messages {% endblock %}
+
 
 {% block content %}
-    <div class="message_log">
-    <h1> Inbox: </h1>
-<table>
-    {% for message in messages %}
-      <tr>
-        <th> Date Sent: </th> <td> {{ message.date_sent.strftime('%m/%d/%y')}} </td>
-        <th> Sender: </th> <td> {{ demystify(message.firstname) + ' ' + demystify(message.lastname) }}</td>
-        <th> Content: </th> <td> {{ message.content }} </td>
-        <th> Actions: </th> <td> <input type="button" value="Open"/> <input type="button" value="Delete"/></td>
-      </tr>
-    {% endfor %}
-</table>
-  </div>
 
+<div class="container-fluid">
+  <h2>Inbox</h2>
+  <div class="accordion" id="messageaccordion">
+    {% for index, message in enumerate(messages) %}
+    <div class="card">
+      <div class="card-header" id="heading-{{ message.mid }}">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#message-{{ message.mid }}" aria-expanded="true" aria-controls="collapseOne">
+            {{ demystify(message.firstname) }} {{ demystify(message.lastname) }} - {{ message.subject }}
+          </button>
+        </h5>
+      </div>
+
+      <div id="message-{{ message.mid }}" class="collapse" aria-labelledby="heading-{{ message.mid }}" data-parent="#messageaccordion">
+        <div class="card-body">
+          {% for line in message.content.split('\n') %}
+            {{ line }} <br>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+      <h2> New Message</h2>
       <form action="" method="POST" name="create_new_msg">
-        <h1> New Message: </h1>
-        <div>
-          <label>Send To: <select name="recipient">
+          <label for="recipient">Send To</label>
+          <select class="form-control" name="recipient">
             {% for user in users %}
               <option value="{{user.uid}}">  {{ demystify(user.firstname) + ' ' + demystify(user.lastname) + ': ' + demystify(user.email) }} </option>
             {% endfor %}
           </select>
-          </label>
-        </div>
-        <div>
-          <label> Subject:   </label>
-          <input type="text" placeholder="Subject" name="subject" size="40">
-        </div>
-          <textarea name="content" rows="15" cols="49"></textarea>
+          <label for="subject">Subject</label>
+          <input class="form-control" type="text" placeholder="Subject" name="subject">
+          <label for="content">Content</label>
+          <textarea class="form-control" name="content" rows="15" cols="49"></textarea>
           <br/>
-          <input type="submit" value="Send Message"/>
+          <input class="form-control" type="submit" value="Send Message"/>
       </form>
 {% endblock %}
 
