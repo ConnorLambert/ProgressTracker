@@ -80,21 +80,28 @@ def project(pid):
             return redirect(url_for('my.dashboard'))
 
         # involvement check: is the user actually assigned to this project?
+        # for bonus points, we're going to also get the other users involved
         dbcursor.execute(
             ' SELECT *'
             ' FROM Involvements'
-            ' WHERE (Involvements.uid = (%s)) AND (Involvements.pid = (%s))'
-            ' ORDER BY Involvements.pid DESC',
-            (session['uid'], pid,)
+            ' NATURAL JOIN Users'
+            ' NATURAL JOIN Projects'
+            ' WHERE pid=(%s)',
+            (pid,)
         )
 
-        projectscheck = dbcursor.fetchone()
+        projectteam = dbcursor.fetchall()
 
-        if projectscheck is None:
-            flash('You aren\'t assigned to that project.')
+        # admittedly, these next parts are a little difficult to read
+        # first, see if any of the people involved has the current user's uid
+        if not any(user['uid'] == session['uid'] for user in projectteam) :
+            flash('You aren\'t assigned to that project.', category='danger')
             return redirect(url_for('my.dashboard'))
         else:
-            g.rank = projectscheck['rank']
+            # don't ask about the syntax of this one. It uses a 'generator expression'
+            # to extract the row that matches the current user, then extracts
+            # his/her rank from that row. That's all I know.
+            g.rank = (row for row in projectteam if row["uid"] == session['uid']).__next__()['rank']
 
         # then get the announcements with author info
         dbcursor.execute(
@@ -116,7 +123,7 @@ def project(pid):
         tasks = dbcursor.fetchall()
 
         # and pass all of this data to the template
-        return render_template('project/project.html', announcements=announcements, tasks=tasks, thisproject=thisproject)
+        return render_template('project/project.html', announcements=announcements, tasks=tasks, thisproject=thisproject, projectteam=projectteam)
 
 @bp.route('/new', methods=('GET', 'POST'))
 @login_required(level=3)

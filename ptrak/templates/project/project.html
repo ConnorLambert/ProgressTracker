@@ -16,7 +16,16 @@
 {% block content %}
 <div class="container">
   <h2>Project Details</h2>
-  [project members]
+  <div class="card" style="width: 18rem;">
+    <div class="card-header">
+      Project Team
+    </div>
+    <ul class="list-group list-group-flush">
+      {% for member in projectteam %}
+      <li class="list-group-item">{{ demystify(member.firstname) }} {{ demystify(member.lastname) }}</li>
+      {% endfor %}
+    </ul>
+  </div>
 </div>
 	<div class="container">
     <h2>Announcements</h2>
