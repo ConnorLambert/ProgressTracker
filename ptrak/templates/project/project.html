@@ -1,11 +1,6 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1> <font size="8">{% block title %}{{thisproject.title}} {% endblock %}</font></h1>
-  {{thisproject.description}}<br><br>
-  {{'Project Owner: ' + demystify(thisproject.firstname) + ' ' + demystify(thisproject.lastname)}}<br>
-  {{'Due date: ' + thisproject.date_due}}<br>
-{% endblock %}
+{% block title %}{{ thisproject.title }}{% endblock %}
 
 {% block pagenav %}
   <li class="nav-item dropdown">
@@ -19,7 +14,11 @@
 {% endblock %}
 
 {% block content %}
-	<div class="announcements">
+<div class="container">
+  <h2>Project Details</h2>
+  [project members]
+</div>
+	<div class="container">
     <h2>Announcements</h2>
 
     {% for a in announcements %}
@@ -30,15 +29,15 @@
 		<br>
 	</div>
 
-  <div class="tasks">
+  <div class="container">
     <h2>Tasks</h2>
 
     {% for t in tasks %}
     <div class="container-fluid">
       <div class="card">
-        <h5 class="card-header">{{ t.title }}</h5>
+        <h5 class="card-header">{{ t.title }} [status badge]</h5>
         <div class="card-body">
-          <h5 class="card-title">{{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
+          <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
           <p class="card-text">{{ t.description }}</p>
           <a href="#" class="btn btn-primary">Go somewhere</a>
         </div>
@@ -47,6 +46,7 @@
         </div>
       </div>
     </div>
+    <br />
     <!-- XXX
     <div class="container-fluid"
     <form action="" method="POST" name="update task">

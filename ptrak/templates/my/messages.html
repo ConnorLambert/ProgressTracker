@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<div class="container-fluid">
+<div class="container">
   <h2>Inbox</h2>
   <div class="accordion" id="messageaccordion">
     {% for index, message in enumerate(messages) %}
@@ -31,22 +31,23 @@
   </div>
 </div>
 
-
-      <h2>New Message</h2>
-      <form action="" method="POST" name="create_new_msg">
-          <label for="recipient">Send To</label>
-          <select class="form-control" name="recipient">
-            {% for user in users %}
-              <option value="{{user.uid}}">  {{ demystify(user.firstname) + ' ' + demystify(user.lastname) + ': ' + demystify(user.email) }} </option>
-            {% endfor %}
-          </select>
-          <label for="subject">Subject</label>
-          <input class="form-control" type="text" placeholder="Subject" name="subject">
-          <label for="content">Content</label>
-          <textarea class="form-control" name="content" rows="15" cols="49"></textarea>
-          <br/>
-          <input class="form-control" type="submit" value="Send Message"/>
-      </form>
+<div class="container">
+  <h2>New Message</h2>
+  <form action="" method="POST" name="create_new_msg">
+      <label for="recipient">Send To</label>
+      <select class="form-control" name="recipient">
+      {% for user in users %}
+        <option value="{{user.uid}}">  {{ demystify(user.firstname) + ' ' + demystify(user.lastname) + ': ' + demystify(user.email) }} </option>
+      {% endfor %}
+      </select>
+      <label for="subject">Subject</label>
+      <input class="form-control" type="text" placeholder="Subject" name="subject">
+      <label for="content">Content</label>
+      <textarea class="form-control" name="content" rows="15" cols="49"></textarea>
+      <br/>
+      <input class="form-control" type="submit" value="Send Message"/>
+  </form>
+</div>
 {% endblock %}
 
 <!-- @bp.route('/my/messages', methods=('GET', 'POST'))
