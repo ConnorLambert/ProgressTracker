@@ -136,7 +136,7 @@ def login():
             lastname = demystify(user_result['lastname'])
             if password == firstname[0]+lastname:
                 return redirect(url_for('user.resetPwd'))
-            return redirect(url_for('testindex'))
+            return redirect(url_for('my.dashboard'))
 
         flash(error, category='warning')
 
