@@ -1,20 +1,17 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %} Create New Project {% endblock %}</h1>
-{% endblock %}
+{% block title %} Create New Project {% endblock %}
 
 {% block content %}
-    <div>
-        <br />
+    <div class="container">
         <form action="" method="post">
-            <input type="text" placeholder="Project Name" name="name" value="{{ request.form.name }}" />
-            <br><br>
-            <textarea placeholder="Description" name="description" rows="8" cols="30"></textarea>
-            <br><br>
-            <input type="text" placeholder="Date Due YYYY-MM-DD" name="date_due" value="{{ request.form.date_due}}" />
-            <br><br>
-            <input class="btn btn-default" type="submit" value="Create" />
+          <label for="name">Project name</label>
+          <input class="form-control" type="text" placeholder="Project Name" name="name" value="{{ request.form.name }}" />
+          <label for="description">Description</label>
+          <textarea class="form-control" placeholder="Description" name="description" rows="8" cols="30"></textarea>
+          <label for="description">Due date</label>
+          <input class="form-control" type="text" placeholder="Date Due YYYY-MM-DD" name="date_due" value="{{ request.form.date_due}}" />
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
         </form>
     </div>
 {% endblock %}
