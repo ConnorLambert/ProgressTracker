@@ -40,7 +40,11 @@ def load_logged_in_user():
         )
         g.user = dbcursor.fetchone()
         dbcursor.execute(
-            'SELECT * FROM Messages WHERE destination = (%s) AND unread=1', (uid,)
+            'SELECT subject, content, date_sent, firstname, lastname'
+            ' FROM Messages JOIN Users on source=uid'
+            ' WHERE destination = (%s) AND unread=1'
+            ' ORDER BY date_sent DESC', 
+            (uid,)
         )
         g.unreadmsgs = dbcursor.fetchall()
 
