@@ -37,8 +37,8 @@
 <div class="container">
   <h2>New Message</h2>
   <form action="" method="POST" name="create_new_msg">
-      <label for="recipient">Send To</label>
-      <select class="form-control" name="recipient">
+      <label for="destination">Send To</label>
+      <select class="form-control" name="destination">
       {% for user in users %}
         <option value="{{user.uid}}">  {{ demystify(user.firstname) + ' ' + demystify(user.lastname) + ': ' + demystify(user.email) }} </option>
       {% endfor %}
@@ -48,7 +48,7 @@
       <label for="content">Content</label>
       <textarea class="form-control" name="content" rows="15" cols="49"></textarea>
       <br/>
-      <input class="form-control" type="submit" value="Send Message"/>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Send message</button>
   </form>
 </div>
 {% endblock %}

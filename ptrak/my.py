@@ -13,7 +13,7 @@ from ptrak.user import login_required
 # init the blueprint
 bp = Blueprint('my', __name__, url_prefix='/my')
 
-@bp.route('/messages')
+@bp.route('/messages', methods=('GET', 'POST'))
 @login_required
 def messages():
     """
@@ -24,8 +24,43 @@ def messages():
     It passes both of these lists of dictionaries to the template as arguments
     (``messages`` and ``users``, respectively).
     """
-    # load some items from the DB to pass to the template
     dbcursor = get_db().cursor()
+    if request.method == 'POST':
+        # of course, the source is the current uid
+        source = session['uid']
+        # get values from form inputs
+        destination = request.form['destination']
+        subject = request.form['subject']
+        content = request.form['content']
+
+        # validation
+        error = None
+        # make sure the destination is an int
+        try:
+            destination = int(destination)
+        except ValueError:
+            error = "Invalid destination."
+        # check that the destination user actually exists as well
+        rows = dbcursor.execute(
+            'SELECT firstname FROM Users WHERE uid=(%s)',
+            (destination,)
+        )
+        if rows < 1:
+            error = "Invalid destination."
+
+        if error is None:
+            dbcursor.execute(
+                'INSERT INTO Messages'
+                ' (destination, source, subject, content) VALUES'
+                ' (%s, %s, %s, %s)',
+                (destination, source, subject, content,)
+            )
+            flash("Message sent!", category="success")
+        else:
+            flash(error, category="danger")
+
+
+    # load some items from the DB to pass to the template
     # get all messages addressed to the current user, newest first
     dbcursor.execute(
         'SELECT mid, source, firstname, lastname, email, content, date_sent, subject, unread'
