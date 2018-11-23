@@ -28,13 +28,22 @@ def messages():
     dbcursor = get_db().cursor()
     # get all messages addressed to the current user, newest first
     dbcursor.execute(
-        'SELECT mid, source, firstname, lastname, email, content, date_sent, subject'
+        'SELECT mid, source, firstname, lastname, email, content, date_sent, subject, unread'
         ' FROM Messages JOIN Users ON Messages.source = Users.uid '
         ' WHERE Messages.destination = (%s)'
         ' ORDER BY date_sent DESC',
         (session['uid'],)
     )
     messages = dbcursor.fetchall()
+
+    # and mark all messages as read, AFTER getting the unread ones
+    dbcursor.execute(
+        'UPDATE Messages SET unread=0'
+        ' WHERE destination=(%s)',
+        (session['uid'],)
+    )
+    # also, clear the notification
+    g.unreadmsgs = []
 
     # get a list of users for addressing outgoing messages
     dbcursor.execute(
@@ -69,9 +78,25 @@ def dashboard():
     )
     userProjects = dbcursor.fetchall()
 
+    # every user is expected to belong to at least one project
+    # IDEA: maybe redirect to the pit page instead? Or nowhere at all?
     if userProjects is None:
         error = 'User belongs to no projects!'
         flash(error, category='danger')
         return redirect(url_for('testindex'))
 
-    return render_template('my/dashboard.html', userProjects=userProjects)
+    # I don't...I don't really want to think too much about this one.
+    # This beastly query gets 5 of the most recent announcements
+    # made on projects with which the current user is involved.
+    # It took a surprising amount of thought to assemble.
+    dbcursor.execute(
+        'SELECT content, date_made, title, firstname, lastname, aid '
+        ' FROM Projects natural join Announcements JOIN Users ON author=uid'
+        ' WHERE pid IN'
+        ' (select pid from Users NATURAL JOIN Involvements where uid=(%s))'
+        ' ORDER BY date_made DESC LIMIT 5',
+        (session['uid'],)
+    )
+    announcements = dbcursor.fetchall()
+
+    return render_template('my/dashboard.html', userProjects=userProjects, announcements=announcements)

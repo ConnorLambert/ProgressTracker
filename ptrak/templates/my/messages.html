@@ -12,7 +12,7 @@
     {% for index, message in enumerate(messages) %}
     <div class="card">
       <div class="card-header" id="heading-{{ message.mid }}">
-        <h5 class="mb-0">
+        <h5 class="mb-0">{% if message.unread %}<span class="badge badge-info">New</span>{% endif %}
           <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#message-{{ message.mid }}" aria-expanded="true" aria-controls="collapseOne">
             {{ demystify(message.firstname) }} {{ demystify(message.lastname) }} - {{ message.subject }}
           </button>
@@ -24,6 +24,9 @@
           {% for line in message.content.split('\n') %}
             {{ line }} <br>
           {% endfor %}
+        </div>
+        <div class="card-footer">
+          <small><em>Sent {{ message.date_sent }}</em></small>
         </div>
       </div>
     </div>

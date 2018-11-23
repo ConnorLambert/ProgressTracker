@@ -43,7 +43,7 @@
 
     {% for t in tasks %}
     <div class="container-fluid">
-      <div class="card">
+      <div class="card shadow">
         <h5 class="card-header">{{ t.title }} [status badge]</h5>
         <div class="card-body">
           <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
