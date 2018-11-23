@@ -52,31 +52,3 @@
   </form>
 </div>
 {% endblock %}
-
-<!-- @bp.route('/my/messages', methods=('GET', 'POST'))
-     @login_required#(level=0)
-     def messages():
-      if request.method=='POST':
-          source = *- TARGET CURRENT USER'S ID HERE -*
-          recipient = request.form['recipient'] <- Will need to target their ID
-          content = request.from['content']
-          date_sent = CURRENT_TIMESTAMP
-
-          error = None
-
-          if content is None:
-            error = 'No message content.'
-          # Possibly run more checks for errors in creation of new message
-
-        if error is None:
-          dbcursor = get_db().cursor()
-          dbcursor.execute(
-            *- INSERT NEW MESSAGE INTO TABLE -*
-
-          )
-          flash('Message Sent')
-          return redirect(url_for('testindex')) #Possibly redirect back to messages on success?
-        flash(error)
-        return render_template('/my/messages.html') #Show messages again on error?
-
--->
