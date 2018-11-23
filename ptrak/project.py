@@ -101,7 +101,7 @@ def project(pid):
             # don't ask about the syntax of this one. It uses a 'generator expression'
             # to extract the row that matches the current user, then extracts
             # his/her rank from that row. That's all I know.
-            g.rank = (row for row in projectteam if row["uid"] == session['uid']).__next__()['rank']
+            g.rank = next(row for row in projectteam if row["uid"] == session['uid'])['rank']
 
         # then get the announcements with author info
         dbcursor.execute(
