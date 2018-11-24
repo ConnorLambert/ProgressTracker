@@ -205,6 +205,7 @@ def announce(pid):
 
     return 'STUB: adding announcement to project {}'.format(pid)
 
+
 @bp.route('/<int:pid>/settings', methods=('GET', 'POST'))
 @login_required(level=3)
 def settings(pid):
@@ -231,16 +232,17 @@ def settings(pid):
         dbcursor.execute(
             ' SELECT *'
             ' FROM Involvements'
-            ' WHERE (Involvements.uid = (%s)) AND (Involvements.pid = (%s))'
+            ' WHERE Involvements.uid = (%s) AND Involvements.pid = (%s)'
             ' ORDER BY Involvements.pid DESC',
             (session['uid'], pid,)
         )
 
         projectscheck = dbcursor.fetchone()
 
-        if projectscheck is None or projectscheck['uid'] < 3:
-            flash('You don\'t have permission to edit this project.')
-            return redirect(url_for('my.dashboard'))
+        # make sure the user has the correct rank to edit this project
+        if projectscheck is None or projectscheck['rank'] < 3:
+            flash('You don\'t have permission to edit this project.', category='warning')
+            return redirect(url_for('project.project', pid=pid))
 
         # then get the announcements with author info
         dbcursor.execute(
