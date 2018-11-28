@@ -1,31 +1,24 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %} New User {% endblock %}</h1>
-{% endblock %}
-
 {% block content %}
-    <div>
-      <h1> New User Registration: </h1>
+    <div class="container">
+      <h1>{% block title %}New user{% endblock %}</h1>
       <form action="" method="POST" name="new_user_form">
-        <div>
-        <input type="text" placeholder="First Name" name="firstname" />
-        <input type="text" placeholder="Last Name" name="lastname" />
-        </div>
-        <br/>
-        <input type="text" placeholder="Email" name="email" />
-        <br/>
-
-        <select name="level">
-          <option value="1"> Employee </option>
+        <label for="firstname">First name</label>
+        <input type="text" class="form-control" placeholder="First Name" name="firstname" />
+        <label for="lastname">Last name</label>
+        <input type="text" class="form-control" placeholder="Last Name" name="lastname" />
+        <label for="email">Email</label>
+        <input type="text" class="form-control" placeholder="Email" name="email" />
+        <label for="level">User level</label>
+        <select name="level" class="form-control">
+          <option value="1"> User </option>
           <option value="3"> Manager </option>
           <option value="5"> Admin </option>
         </select>
-        <br/>
-        <input class="btn btn-default" type="submit" value="Create User"/>
+        <br>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
+
       </form>
-      {% if error %}
-          <p class="error"><strong>Error: </strong> {{error}} </p>
-      {% endif %}
     </div>
 {% endblock %}
