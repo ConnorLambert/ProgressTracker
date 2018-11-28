@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %} Edit Task {% endblock %}
+
+{% block content %}
+    <div class="container">
+        <form action="" method="post">
+          <label for="title">Task title</label>
+          <input class="form-control" type="text" placeholder="Task title" name="title" value="{{ thistask['title'] }}" />
+          <label for="description">Description</label>
+          <textarea class="form-control" placeholder="Description" name="description" rows="8" cols="30">{{ thistask['description'] }}</textarea>
+          <label for="status">Status</label>
+          <select class='form-control' name="status">
+            {% for option in ['new', 'in progress', 'under review', 'complete'] %}
+              <option value="{{ option }}" {% if option == thistask['status'] %}selected{% endif %}> {{ option }} </option>
+            {% endfor %}
+          </select>
+          <label for="date_due">Due date</label>
+          <input class="form-control" type="text" placeholder="YYYY-MM-DD" name="date_due" value="{{ thistask['date_due'] }}" />
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
+        </form>
+    </div>
+{% endblock %}

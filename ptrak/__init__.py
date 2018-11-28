@@ -63,6 +63,10 @@ def create_app(test_config=None):
         from . import project
         app.register_blueprint(project.bp)
 
+        # add the task blueprint to the app
+        from . import task
+        app.register_blueprint(task.bp)
+
 
         @app.route('/')
         def testindex():
