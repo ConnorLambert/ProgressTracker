@@ -69,7 +69,9 @@
             <h5 class="card-header">{{ t.title }} <span class='badge badge-warning'>New</span></h5>
             <div class="card-body">
               <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
-              <p class="card-text">{{ t.description }}</p>
+              {% for line in t.description.split('\n') if line != '' %}
+              <p class="card-text">{{ line }}</p>
+              {% endfor %}
               <a href="{{ url_for('task.edit', tid=t.tid) }}" class="btn btn-primary">Update task</a>
             </div>
             <div class="card-footer text-muted">
@@ -90,7 +92,9 @@
             <h5 class="card-header">{{ t.title }} <span class='badge badge-warning'>In Progress</span></h5>
             <div class="card-body">
               <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
-              <p class="card-text">{{ t.description }}</p>
+              {% for line in t.description.split('\n') if line != '' %}
+              <p class="card-text">{{ line }}</p>
+              {% endfor %}
               <a href="{{ url_for('task.edit', tid=t.tid) }}" class="btn btn-primary">Update task</a>
             </div>
             <div class="card-footer text-muted">
@@ -111,7 +115,9 @@
             <h5 class="card-header">{{ t.title }} <span class='badge badge-warning'>Under Review</span></h5>
             <div class="card-body">
               <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
-              <p class="card-text">{{ t.description }}</p>
+              {% for line in t.description.split('\n') if line != '' %}
+              <p class="card-text">{{ line }}</p>
+              {% endfor %}
               <a href="{{ url_for('task.edit', tid=t.tid) }}" class="btn btn-primary">Update task</a>
             </div>
             <div class="card-footer text-muted">
@@ -132,7 +138,9 @@
             <h5 class="card-header">{{ t.title }} <span class='badge badge-warning'>Complete</span></h5>
             <div class="card-body">
               <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
-              <p class="card-text">{{ t.description }}</p>
+              {% for line in t.description.split('\n') if line != '' %}
+              <p class="card-text">{{ line }}</p>
+              {% endfor %}
               <a href="{{ url_for('task.edit', tid=t.tid) }}" class="btn btn-primary">Update task</a>
             </div>
             <div class="card-footer text-muted">
