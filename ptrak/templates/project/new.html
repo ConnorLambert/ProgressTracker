@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
 
-{% block title %} Create New Project {% endblock %}
-
 {% block content %}
-    <div class="container">
-        <form action="" method="post">
-          <label for="name">Project name</label>
-          <input class="form-control" type="text" placeholder="Project Name" name="name" value="{{ request.form.name }}" />
-          <label for="description">Description</label>
-          <textarea class="form-control" placeholder="Description" name="description" rows="8" cols="30"></textarea>
-          <label for="description">Due date</label>
-          <input class="form-control" type="text" placeholder="Date Due YYYY-MM-DD" name="date_due" value="{{ request.form.date_due}}" />
-          <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
-        </form>
-    </div>
+  <div class="container">
+    <h1>{% block title %} New Project {% endblock %}</h1>
+      <form action="" method="post">
+        <label for="name">Project name</label>
+        <input class="form-control" type="text" placeholder="Project Name" name="name" value="" />
+        <label for="description">Description</label>
+        <textarea class="form-control" placeholder="Description" name="description" rows="8" cols="30"></textarea>
+        <label for="description">Due date</label>
+        <input class="form-control" type="text" placeholder="Date Due YYYY-MM-DD" name="date_due" value="" />
+        <br>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
+      </form>
+  </div>
 {% endblock %}

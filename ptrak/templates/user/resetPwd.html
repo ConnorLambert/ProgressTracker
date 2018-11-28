@@ -1,25 +1,16 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %}Update Password{% endblock %}</h1>
-{% endblock %}
-
 {% block content %}
-    <div>
-      <h1> Reset Password: </h1>
-      <form action="" method="POST" name="reset_pwd">
-        <div>
-        <input type="password" placeholder="New Password" name="password1" />
-        <input type="password" placeholder="Retype New Password" name="password2" />
-        </div>
-        <input class="btn btn-default" type="submit" value="Reset Password"/>
-      </form>
-      {% if error %}
-          <p class="error"><strong>Error: </strong> {{error}} </p>
-      {% endif %}
+    <div class="container">
+      <h1>{% block title %}Update Password{% endblock %}</h1>
 
-      {% for message in get_flashed_messages() %}
-          {{ message }}
-      {% endfor %}
+      <form action="" method="POST" name="reset_pwd">
+        <label for="password1">New password</label>
+        <input type="password" class="form-control" placeholder="New Password" name="password1" />
+        <label for="password2">Enter again</label>
+        <input type="password" class="form-control" placeholder="Retype New Password" name="password2" />
+        <br>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Update password</button>
+      </form>
     </div>
 {% endblock %}

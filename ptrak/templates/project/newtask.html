@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
 
-{% block title %} Add New Task {% endblock %}
-
 {% block content %}
     <div class="container">
+      <h1>{% block title %}New Task{% endblock %}</h1>
         <form action="" method="post">
           <label for="title">Task title</label>
           <input class="form-control" type="text" placeholder="Task title" name="title" />
@@ -11,6 +10,7 @@
           <textarea class="form-control" placeholder="Description" name="description" rows="8" cols="30"></textarea>
           <label for="date_due">Due date</label>
           <input class="form-control" type="text" placeholder="YYYY-MM-DD" name="date_due" value="" />
+          <br>
           <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
         </form>
     </div>

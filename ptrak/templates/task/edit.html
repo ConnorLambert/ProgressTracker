@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
 
-{% block title %} Edit Task {% endblock %}
-
 {% block content %}
     <div class="container">
+      <h1>{% block title %} Edit Task {% endblock %}</h1>
         <form action="" method="post">
           <label for="title">Task title</label>
           <input class="form-control" type="text" placeholder="Task title" name="title" value="{{ thistask['title'] }}" />
@@ -17,6 +16,7 @@
           </select>
           <label for="date_due">Due date</label>
           <input class="form-control" type="text" placeholder="YYYY-MM-DD" name="date_due" value="{{ thistask['date_due'] }}" />
+          <br>
           <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
         </form>
     </div>
