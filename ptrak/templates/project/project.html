@@ -59,123 +59,33 @@
       </li>
 
     </ul>
-    <!-- Tab: new tasks -->
-    <div class="tab-content" id="myTabContent">
-      <div class="tab-pane fade show active" id="new" role="tabpanel" aria-labelledby="new-tab">
-        <br >
-        {% for t in tasks if t['status'] == 'new' %}
-        <div class="container-fluid">
-          <div class="card shadow">
-            <h5 class="card-header">{{ t.title }} <span class='badge badge-warning'>New</span></h5>
-            <div class="card-body">
-              <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
-              {% for line in t.description.split('\n') if line != '' %}
-              <p class="card-text">{{ line }}</p>
-              {% endfor %}
-              <a href="{{ url_for('task.edit', tid=t.tid) }}" class="btn btn-primary">Update task</a>
-            </div>
-            <div class="card-footer text-muted">
-              Last updated {{ t.date_updated }}
-            </div>
-          </div>
-        </div>
-        {% else %}
-        No new tasks.
-        {% endfor %}
-      </div>
-      <!-- Tab: in-progress tasks -->
-      <div class="tab-pane fade" id="inprogress" role="tabpanel" aria-labelledby="inprogress-tab">
-        <br >
-        {% for t in tasks if t['status'] == 'in progress' %}
-        <div class="container-fluid">
-          <div class="card shadow">
-            <h5 class="card-header">{{ t.title }} <span class='badge badge-warning'>In Progress</span></h5>
-            <div class="card-body">
-              <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
-              {% for line in t.description.split('\n') if line != '' %}
-              <p class="card-text">{{ line }}</p>
-              {% endfor %}
-              <a href="{{ url_for('task.edit', tid=t.tid) }}" class="btn btn-primary">Update task</a>
-            </div>
-            <div class="card-footer text-muted">
-              Last updated {{ t.date_updated }}
-            </div>
-          </div>
-        </div>
-        {% else %}
-        No tasks in progress.
-        {% endfor %}
-      </div>
-      <!-- Tab: under-review tasks -->
-      <div class="tab-pane fade" id="underreview" role="tabpanel" aria-labelledby="underreview-tab">
-        <br >
-        {% for t in tasks if t['status'] == 'under review' %}
-        <div class="container-fluid">
-          <div class="card shadow">
-            <h5 class="card-header">{{ t.title }} <span class='badge badge-warning'>Under Review</span></h5>
-            <div class="card-body">
-              <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
-              {% for line in t.description.split('\n') if line != '' %}
-              <p class="card-text">{{ line }}</p>
-              {% endfor %}
-              <a href="{{ url_for('task.edit', tid=t.tid) }}" class="btn btn-primary">Update task</a>
-            </div>
-            <div class="card-footer text-muted">
-              Last updated {{ t.date_updated }}
-            </div>
-          </div>
-        </div>
-        {% else %}
-        No tasks under review.
-        {% endfor %}
-      </div>
-      <!-- Tab: complete tasks -->
-      <div class="tab-pane fade" id="complete" role="tabpanel" aria-labelledby="complete-tab">
-        <br >
-        {% for t in tasks if t['status'] == 'complete' %}
-        <div class="container-fluid">
-          <div class="card shadow">
-            <h5 class="card-header">{{ t.title }} <span class='badge badge-warning'>Complete</span></h5>
-            <div class="card-body">
-              <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
-              {% for line in t.description.split('\n') if line != '' %}
-              <p class="card-text">{{ line }}</p>
-              {% endfor %}
-              <a href="{{ url_for('task.edit', tid=t.tid) }}" class="btn btn-primary">Update task</a>
-            </div>
-            <div class="card-footer text-muted">
-              Last updated {{ t.date_updated }}
-            </div>
-          </div>
-        </div>
-        {% else %}
-        No completed tasks.
-        {% endfor %}
-      </div>
 
+    {# draw the status tabs, programmatically. It's a little non-trivial. #}
+    <div class="tab-content" id="myTabContent">
+      {% for index, option in enumerate(['new', 'in progress', 'under review', 'complete']) %}
+      <div class="tab-pane fade show {% if index == 0 %}active{% endif %}" id="{{option|replace(' ', '')}}" role="tabpanel" aria-labelledby="{{ option|replace(' ', '') }}-tab">
+        <br >
+        {% for t in tasks if t['status'] == option %}
+        <div class="container-fluid">
+          <div class="card shadow">
+            <h5 class="card-header">{{ t.title }} <span class='badge badge-warning'>{{ option|capitalize }}</span></h5>
+            <div class="card-body">
+              <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
+              {% for line in t.description.split('\n') if line != '' %}
+              <p class="card-text">{{ line }}</p>
+              {% endfor %}
+              <a href="{{ url_for('task.edit', tid=t.tid) }}" class="btn btn-primary">Update task</a>
+            </div>
+            <div class="card-footer text-muted">
+              Last updated {{ t.date_updated }}
+            </div>
+          </div>
+        </div>
+        {% else %}
+        No tasks.
+        {% endfor %}
+      </div>
+      {% endfor %}
     </div>
 
-
-    {# XXX <!--
-    <div class="container-fluid"
-    <form action="" method="POST" name="update task">
-        <strong>{{t.title}}</strong> {{'            ' + t.status }} <select name="status">
-          <option value="" selected disabled hidden>Update status</option>
-          <option value="new"> new </option>
-          <option value="in progress"> in progress </option>
-          {% if g.rank < 3 %}
-            <option value="under review"> complete </option>
-          {% else %}
-            <option value="complete"> complete </option>
-          {% endif %}
-        </select>
-        <button name="taskid" type="submit" value={{t.tid}}>Submit</button>
-      <br>
-      </form>
-
-        Last updated by {{demystify(t.firstname) + ' ' + demystify(t.lastname)}} on {{' ' + t.date_updated}} <br>
-      </div>
-      -->#}
-		<br>
-	</div>
 {% endblock %}
