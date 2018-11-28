@@ -16,6 +16,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 # import our get_db() function
 from ptrak.db import get_db, mystify, demystify
 from time import time
+import re
 
 # init the blueprint object
 bp = Blueprint('user', __name__, url_prefix='/user')
@@ -43,7 +44,7 @@ def load_logged_in_user():
             'SELECT subject, content, date_sent, firstname, lastname'
             ' FROM Messages JOIN Users on source=uid'
             ' WHERE destination = (%s) AND unread=1'
-            ' ORDER BY date_sent DESC', 
+            ' ORDER BY date_sent DESC',
             (uid,)
         )
         g.unreadmsgs = dbcursor.fetchall()
@@ -179,17 +180,21 @@ def logout():
     return redirect(url_for('testindex'))
 
 @bp.route('/new', methods=('GET', 'POST'))
-@login_required(level=3)    # this level is open for debate
+@login_required(level=3)
 def new():
+    dbcursor = get_db().cursor()
+    dbcursor.execute(
+        'SELECT * FROM Projects'
+    )
+    allprojects = dbcursor.fetchall()
+
     if request.method == 'POST':
         firstname = request.form['firstname']
         lastname = request.form['lastname']
         email = request.form['email']
         level = request.form['level']
-        try:
-            projects = request.form['projects']
-        except:
-            projects = None
+        projects = request.form.getlist('projects')
+
 
         error = None
         #checks to make sure fields are assigned properly
@@ -204,15 +209,21 @@ def new():
 
         #insert new user
         if error is None:
-            dbcursor = get_db().cursor()
             dbcursor.execute(
-                'INSERT INTO Users (firstname, lastname, email, password, level, projects) '
-                'VALUES (%s, %s, %s, %s, %s, %s)',
-                (mystify(firstname), mystify(lastname), mystify(email), generate_password_hash(firstname[0]+lastname), level, projects,)
+                'INSERT INTO Users (firstname, lastname, email, password, level) '
+                'VALUES (%s, %s, %s, %s, %s)',
+                (mystify(firstname), mystify(lastname), mystify(email), generate_password_hash(firstname[0]+lastname), level,)
             )
-            #return redirect(url_for('my.dashboard'))
-            flash('Successful User Added', category='info')
-            return redirect(url_for('testindex'))
+
+            for pid in projects:
+                dbcursor.execute(
+                    'INSERT INTO Involvements (uid, pid, rank)'
+                    ' VALUES (LAST_INSERT_ID(), %s, 1)',
+                    (pid,)
+                )
+
+            flash('User successfully added.', category='success')
+            return redirect(url_for('my.dashboard'))
         flash(error, category='warning')
 
-    return render_template('user/new.html')
+    return render_template('user/new.html', allprojects=allprojects)
