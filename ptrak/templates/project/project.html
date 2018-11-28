@@ -6,9 +6,11 @@
   <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" href="#" id="dd_prmenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Project Menu</a>
     <div class="dropdown-menu" aria-labelledby="dd_prmenu">
-      <a class="dropdown-item" href="{{ url_for('project.settings', pid=thisproject.pid)}}">Edit project settings</a>
-      <a class="dropdown-item" href="#">Make announcement</a>
-      <a class="dropdown-item" href="#">[placeholder]</a>
+      <a class="dropdown-item" href="{{ url_for('project.settings', pid=thisproject.pid) }}">Edit project settings</a>
+      <a class="dropdown-item" href="{{ url_for('project.announce', pid=thisproject.pid) }}">Make announcement</a>
+      <a class="dropdown-item" href="{{ url_for('project.newtask', pid=thisproject.pid) }}">New task</a>
+      <a class="dropdown-item" href="{{ url_for('project.leave', pid=thisproject.pid) }}">Leave project</a>
+
     </div>
   </li>
 {% endblock %}
@@ -33,6 +35,8 @@
     {% for a in announcements %}
         <strong>{{a.content}}</strong> <br>
         Created by {{demystify(a.firstname) + ' ' + demystify(a.lastname)}} on {{' ' + a.date_made}}
+    {% else %}
+      No announcements yet.
     {% endfor %}
 
 		<br>
@@ -40,23 +44,111 @@
 
   <div class="container">
     <h2>Tasks</h2>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="new-tab" data-toggle="tab" href="#new" role="tab" aria-controls="new" aria-selected="true">New</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="inprogress-tab" data-toggle="tab" href="#inprogress" role="tab" aria-controls="inprogress" aria-selected="false">In Progress</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="underreview-tab" data-toggle="tab" href="#underreview" role="tab" aria-controls="underreview" aria-selected="false">Under Review</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="complete-tab" data-toggle="tab" href="#complete" role="tab" aria-controls="complete" aria-selected="false">Complete</a>
+      </li>
 
-    {% for t in tasks %}
-    <div class="container-fluid">
-      <div class="card shadow">
-        <h5 class="card-header">{{ t.title }} [status badge]</h5>
-        <div class="card-body">
-          <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
-          <p class="card-text">{{ t.description }}</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
+    </ul>
+    <!-- Tab: new tasks -->
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="new" role="tabpanel" aria-labelledby="new-tab">
+        <br >
+        {% for t in tasks if t['status'] == 'new' %}
+        <div class="container-fluid">
+          <div class="card shadow">
+            <h5 class="card-header">{{ t.title }} <span class='badge badge-warning'>New</span></h5>
+            <div class="card-body">
+              <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
+              <p class="card-text">{{ t.description }}</p>
+              <a href="{{ url_for('task.edit', tid=t.tid) }}" class="btn btn-primary">Update task</a>
+            </div>
+            <div class="card-footer text-muted">
+              Last updated {{ t.date_updated }}
+            </div>
+          </div>
         </div>
-        <div class="card-footer text-muted">
-          Last updated {{ t.date_updated }}
-        </div>
+        {% else %}
+        No new tasks.
+        {% endfor %}
       </div>
+      <!-- Tab: in-progress tasks -->
+      <div class="tab-pane fade" id="inprogress" role="tabpanel" aria-labelledby="inprogress-tab">
+        <br >
+        {% for t in tasks if t['status'] == 'in progress' %}
+        <div class="container-fluid">
+          <div class="card shadow">
+            <h5 class="card-header">{{ t.title }} <span class='badge badge-warning'>In Progress</span></h5>
+            <div class="card-body">
+              <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
+              <p class="card-text">{{ t.description }}</p>
+              <a href="{{ url_for('task.edit', tid=t.tid) }}" class="btn btn-primary">Update task</a>
+            </div>
+            <div class="card-footer text-muted">
+              Last updated {{ t.date_updated }}
+            </div>
+          </div>
+        </div>
+        {% else %}
+        No tasks in progress.
+        {% endfor %}
+      </div>
+      <!-- Tab: under-review tasks -->
+      <div class="tab-pane fade" id="underreview" role="tabpanel" aria-labelledby="underreview-tab">
+        <br >
+        {% for t in tasks if t['status'] == 'under review' %}
+        <div class="container-fluid">
+          <div class="card shadow">
+            <h5 class="card-header">{{ t.title }} <span class='badge badge-warning'>Under Review</span></h5>
+            <div class="card-body">
+              <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
+              <p class="card-text">{{ t.description }}</p>
+              <a href="{{ url_for('task.edit', tid=t.tid) }}" class="btn btn-primary">Update task</a>
+            </div>
+            <div class="card-footer text-muted">
+              Last updated {{ t.date_updated }}
+            </div>
+          </div>
+        </div>
+        {% else %}
+        No tasks under review.
+        {% endfor %}
+      </div>
+      <!-- Tab: complete tasks -->
+      <div class="tab-pane fade" id="complete" role="tabpanel" aria-labelledby="complete-tab">
+        <br >
+        {% for t in tasks if t['status'] == 'complete' %}
+        <div class="container-fluid">
+          <div class="card shadow">
+            <h5 class="card-header">{{ t.title }} <span class='badge badge-warning'>Complete</span></h5>
+            <div class="card-body">
+              <h5 class="card-title">Added by {{ demystify(t.firstname) }} {{ demystify(t.lastname) }}</h5>
+              <p class="card-text">{{ t.description }}</p>
+              <a href="{{ url_for('task.edit', tid=t.tid) }}" class="btn btn-primary">Update task</a>
+            </div>
+            <div class="card-footer text-muted">
+              Last updated {{ t.date_updated }}
+            </div>
+          </div>
+        </div>
+        {% else %}
+        No completed tasks.
+        {% endfor %}
+      </div>
+
     </div>
-    <br />
-    <!-- XXX
+
+
+    {# XXX <!--
     <div class="container-fluid"
     <form action="" method="POST" name="update task">
         <strong>{{t.title}}</strong> {{'            ' + t.status }} <select name="status">
@@ -75,8 +167,7 @@
 
         Last updated by {{demystify(t.firstname) + ' ' + demystify(t.lastname)}} on {{' ' + t.date_updated}} <br>
       </div>
-      -->
-    {% endfor %}
+      -->#}
 		<br>
 	</div>
 {% endblock %}

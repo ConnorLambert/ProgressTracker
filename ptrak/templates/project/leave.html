@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block includes %}
+<link href="https://getbootstrap.com/docs/4.1/examples/sign-in/signin.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+  <div class="text-center" style="max-width:330px; position:absolute; top:0; bottom:0;left:0;right:0; margin: 7% auto auto auto;">
+      <form class="form-signin" method="post">
+        <h1 class="h3 mb-3 font-weight-normal">{% block title %}Really leave?{% endblock %}</h1>
+        <label for="name1" class="sr-only">Project Name</label>
+        <input type="text" name="name1" id="name1" class="form-control" placeholder="Project name" required autofocus>
+        <label for="name2" class="sr-only">Project Name (again)</label>
+        <input type="name2" name="name2" id="name2" class="form-control" placeholder="Project name (again)" required>
+        <div class="checkbox mb-3">
+          <!--<label>
+            <input type="checkbox" value="remember-me"> Really leave
+          </label> -->
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Confirm</button>
+        <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
+
+      </form>
+{% endblock %}

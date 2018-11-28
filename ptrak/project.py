@@ -1,5 +1,5 @@
 """
-The ``project``` template.
+The ``project`` template.
 """
 
 from flask import (
@@ -175,22 +175,50 @@ def new():
     #return render_template('project/new.html')
     return render_template('project/new.html')
 
-@bp.route('/<int:pid>/newtask')
+@bp.route('/<int:pid>/newtask', methods=('GET', 'POST'))
 @login_required
 def newtask(pid):
+    dbcursor = get_db().cursor()
     # involvement check: is the user actually assigned to this project?
-    if str(pid) not in g.user['projects'].split(';'):
-        flash('You aren\'t assigned to that project.', category='danger')
+    res = dbcursor.execute(
+        'SELECT * FROM Involvements WHERE pid=(%s) AND uid=(%s)',
+        (pid, session['uid'],)
+    )
+    if not res:
+        flash('You aren\'t involved in that project.', category='warning')
         return redirect(url_for('my.dashboard'))
 
-    return 'STUB: adding new task to project {}'.format(pid)
+    if request.method == 'POST':
+        title = request.form['title']
+        due_date = request.form['due_date']
+        description = request.form['description']
+        status = 'new'  # static for now, but may be set from the form later
+
+        error = None
+        # TODO: add validation
+        if error is None:
+            dbcursor.execute(
+                'INSERT INTO Tasks'
+                ' (title, due_date, description, status, pid, creator)'
+                ' VALUES (%s, %s, %s, %s, %s, %s)',
+                (title, due_date, description, status, pid, session['uid'],)
+            )
+            return redirect(url_for('project.project', pid=pid))
+        flash(error, category='warning')
+
+    return render_template('project/newtask.html')
 
 @bp.route('/<int:pid>/edit')
 @login_required(level=3)
 def edit(pid):
+    dbcursor = get_db().cursor()
     # involvement check: is the user actually assigned to this project?
-    if str(pid) not in g.user['projects'].split(';'):
-        flash('You aren\'t assigned to that project.')
+    res = dbcursor.execute(
+        'SELECT * FROM Involvements WHERE pid=(%s) AND uid=(%s)',
+        (pid, session['uid'],)
+    )
+    if not res:
+        flash('You aren\'t involved in that project.', category='warning')
         return redirect(url_for('my.dashboard'))
 
     return 'STUB: editing project {}'.format(pid)
@@ -198,14 +226,19 @@ def edit(pid):
 @bp.route('/<int:pid>/announce')
 @login_required(level=3)
 def announce(pid):
+    dbcursor = get_db().cursor()
     # involvement check: is the user actually assigned to this project?
-    if str(pid) not in g.user['projects'].split(';'):
-        flash('You aren\'t assigned to that project.')
+    res = dbcursor.execute(
+        'SELECT * FROM Involvements WHERE pid=(%s) AND uid=(%s)',
+        (pid, session['uid'],)
+    )
+    if not res:
+        flash('You aren\'t involved in that project.', category='warning')
         return redirect(url_for('my.dashboard'))
 
     return 'STUB: adding announcement to project {}'.format(pid)
 
-
+# TODO fix this up. right now it's a copy of project.project
 @bp.route('/<int:pid>/settings', methods=('GET', 'POST'))
 @login_required(level=3)
 def settings(pid):
@@ -213,13 +246,10 @@ def settings(pid):
         return 'STUB: editing project settings {}'.format(pid)
 
     else:
-
         dbcursor = get_db().cursor()
 
         num = dbcursor.execute(
-            'SELECT pid, uid, firstname, lastname, lastlogin, title, description, CAST(date_due AS char) AS date_due'
-            ' FROM Projects JOIN Users ON owner=uid'
-            ' WHERE pid=(%s)',
+            'SELECT * FROM Projects WHERE pid=(%s)',
             (pid,)
         )
         thisproject = dbcursor.fetchone()
@@ -265,3 +295,41 @@ def settings(pid):
 
         # and pass all of this data to the template
         return render_template('project/settings.html', announcements=announcements, tasks=tasks, thisproject=thisproject)
+
+@bp.route('/<int:pid>/leave', methods=('GET', 'POST'))
+def leave(pid):
+    # as always, start with a cursor
+    dbcursor = get_db().cursor()
+
+    # involvement check
+    res = dbcursor.execute(
+        'SELECT * FROM Involvements WHERE pid=(%s) AND uid=(%s)',
+        (pid, session['uid'],)
+    )
+    if not res:
+        flash('You aren\'t involved in that project.', category='warning')
+        return redirect(url_for('my.dashboard'))
+
+    if request.method == 'POST':
+        name1 = request.form['name1']
+        name2 = request.form['name2']
+
+        # first make sure the given titles at least match
+        if name1 == name2:
+            dbcursor.execute(
+                'SELECT title FROM Projects WHERE pid=%s',
+                (pid,)
+            )
+            title = dbcursor.fetchone()['title']
+            # now make sure they're the title for this project
+            if name1 == title:
+                dbcursor.execute(
+                    'DELETE FROM Involvements '
+                    ' WHERE pid=%s AND uid=%s',
+                    (pid, session['uid'],)
+                )
+                flash('Successfully left '+title+'.', category='success')
+                return redirect(url_for('my.dashboard'))
+            flash('Failed to leave project.',category='warning')
+
+    return render_template('project/leave.html')
