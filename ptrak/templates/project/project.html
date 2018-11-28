@@ -6,9 +6,9 @@
   <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" href="#" id="dd_prmenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Project Menu</a>
     <div class="dropdown-menu" aria-labelledby="dd_prmenu">
-      <a class="dropdown-item" href="{{ url_for('project.settings', pid=thisproject.pid) }}">Edit project settings</a>
-      <a class="dropdown-item" href="{{ url_for('project.announce', pid=thisproject.pid) }}">Make announcement</a>
       <a class="dropdown-item" href="{{ url_for('project.newtask', pid=thisproject.pid) }}">New task</a>
+      <a class="dropdown-item" href="{{ url_for('project.announce', pid=thisproject.pid) }}">Make announcement</a>
+      <a class="dropdown-item" href="{{ url_for('project.settings', pid=thisproject.pid) }}">Edit project settings</a>
       <a class="dropdown-item" href="{{ url_for('project.leave', pid=thisproject.pid) }}">Leave project</a>
 
     </div>
