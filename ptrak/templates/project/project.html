@@ -34,7 +34,7 @@
 
     {% for a in announcements %}
         <strong>{{a.content}}</strong> <br>
-        Created by {{demystify(a.firstname) + ' ' + demystify(a.lastname)}} on {{' ' + a.date_made}}
+        Created by {{demystify(a.firstname) + ' ' + demystify(a.lastname)}} on {{' ' + a.date_made}}<br>
     {% else %}
       No announcements yet.
     {% endfor %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+      <h1>{% block title %}New Announcement{% endblock %}</h1>
+        <form action="" method="post">
+          <textarea class="form-control" placeholder="Content" name="content" rows="8" cols="30" required></textarea>
+          <br>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Announce</button>
+        </form>
+    </div>
+{% endblock %}

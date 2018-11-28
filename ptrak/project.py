@@ -105,7 +105,7 @@ def project(pid):
         dbcursor.execute(
             'SELECT aid, uid, firstname, lastname, content, CAST(date_made AS char) AS date_made, lastlogin'
             ' FROM Announcements JOIN Users ON author=uid'
-            ' WHERE pid=(%s)',
+            ' WHERE pid=(%s) ORDER BY date_made DESC',
             (pid,)
         )
         announcements = dbcursor.fetchall()
@@ -221,7 +221,7 @@ def edit(pid):
 
     return 'STUB: editing project {}'.format(pid)
 
-@bp.route('/<int:pid>/announce')
+@bp.route('/<int:pid>/announce', methods=('GET', 'POST'))
 @login_required(level=3)
 def announce(pid):
     dbcursor = get_db().cursor()
@@ -234,7 +234,18 @@ def announce(pid):
         flash('You aren\'t involved in that project.', category='warning')
         return redirect(url_for('my.dashboard'))
 
-    return 'STUB: adding announcement to project {}'.format(pid)
+    if request.method == 'POST':
+        content = request.form['content']
+
+        dbcursor.execute(
+            'INSERT INTO Announcements (pid, author, content)'
+            ' VALUES (%s, %s, %s)',
+            (pid, session['uid'], content,)
+        )
+
+        return redirect(url_for('project.project', pid=pid))
+
+    return render_template('project/announce.html')
 
 # TODO fix this up. right now it's a copy of project.project
 @bp.route('/<int:pid>/settings', methods=('GET', 'POST'))
