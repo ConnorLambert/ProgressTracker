@@ -30,6 +30,8 @@ def project(pid):
     including tasks and announcements
     for the given pid.
     """
+    # get a cursor to the DB
+    dbcursor = get_db().cursor()
 
     if request.method == 'POST':
         statusupdate = request.form['status']
@@ -43,7 +45,6 @@ def project(pid):
             error = "No task id"
 
         if error is None:
-            dbcursor = get_db().cursor()
             dbcursor.execute(
                 ' UPDATE Tasks'
                 ' SET status = (%s), date_updated = CURRENT_TIMESTAMP'
@@ -58,10 +59,7 @@ def project(pid):
             return redirect(url_for('project.project', pid=pid))
 
     else:
-        dbcursor = get_db().cursor()
 
-        # get a cursor to the DB
-        dbcursor = get_db().cursor()
         # get db data in several stages, resisting the urge
         # to mash them all into one massive table
         # note that not all information *has* to be used;
@@ -114,7 +112,7 @@ def project(pid):
 
         # next get the task list and submitter info
         dbcursor.execute(
-            'SELECT tid, uid, firstname, lastname, title, status, date_submitted, due_date, CAST(date_updated AS char) AS date_updated, tags, description'
+            'SELECT tid, uid, firstname, lastname, title, status, date_submitted, date_due, CAST(date_updated AS char) AS date_updated, tags, description'
             ' FROM Tasks JOIN Users ON Tasks.creator=Users.uid'
             ' WHERE Tasks.pid=(%s)'
             ' ORDER BY Tasks.date_updated DESC',
@@ -190,7 +188,7 @@ def newtask(pid):
 
     if request.method == 'POST':
         title = request.form['title']
-        due_date = request.form['due_date']
+        date_due = request.form['date_due']
         description = request.form['description']
         status = 'new'  # static for now, but may be set from the form later
 
@@ -199,9 +197,9 @@ def newtask(pid):
         if error is None:
             dbcursor.execute(
                 'INSERT INTO Tasks'
-                ' (title, due_date, description, status, pid, creator)'
+                ' (title, date_due, description, status, pid, creator)'
                 ' VALUES (%s, %s, %s, %s, %s, %s)',
-                (title, due_date, description, status, pid, session['uid'],)
+                (title, date_due, description, status, pid, session['uid'],)
             )
             return redirect(url_for('project.project', pid=pid))
         flash(error, category='warning')
@@ -285,7 +283,7 @@ def settings(pid):
 
         # next get the task list and submitter info
         dbcursor.execute(
-            'SELECT tid, uid, firstname, lastname, title, status, date_submitted, due_date, CAST(date_updated AS char) AS date_updated, tags, description'
+            'SELECT tid, uid, firstname, lastname, title, status, date_submitted, date_due, CAST(date_updated AS char) AS date_updated, tags, description'
             ' FROM Tasks JOIN Users ON Tasks.creator=Users.uid'
             ' WHERE Tasks.pid=(%s)'
             ' ORDER BY Tasks.date_updated DESC',
