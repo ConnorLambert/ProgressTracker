@@ -5,11 +5,17 @@
       <h1>{% block title %}New Task{% endblock %}</h1>
         <form action="" method="post">
           <label for="title">Task title</label>
-          <input class="form-control" type="text" placeholder="Task title" name="title" />
+          <input class="form-control" type="text" placeholder="" name="title" />
           <label for="description">Description</label>
-          <textarea class="form-control" placeholder="Description" name="description" rows="8" cols="30"></textarea>
+          <textarea class="form-control" placeholder="" name="description" rows="8" cols="30"></textarea>
+          <label for="status">Status</label>
+          <select class='form-control' name="status">
+            {% for option in ['new', 'in progress'] %}
+              <option value="{{ option }}"> {{ option|capitalize }} </option>
+            {% endfor %}
+          </select>
           <label for="date_due">Due date</label>
-          <input class="form-control" type="text" placeholder="YYYY-MM-DD" name="date_due" value="" />
+          <input class="form-control" type="date" placeholder="YYYY-MM-DD" name="date_due" value="" />
           <br>
           <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
         </form>

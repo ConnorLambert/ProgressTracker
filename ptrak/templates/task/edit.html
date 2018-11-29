@@ -11,11 +11,11 @@
           <label for="status">Status</label>
           <select class='form-control' name="status">
             {% for option in ['new', 'in progress', 'under review', 'complete'] %}
-              <option value="{{ option }}" {% if option == thistask['status'] %}selected{% endif %}> {{ option }} </option>
+              <option value="{{ option }}" {% if option == thistask['status'] %}selected{% endif %}> {{ option|capitalize }} </option>
             {% endfor %}
           </select>
           <label for="date_due">Due date</label>
-          <input class="form-control" type="text" placeholder="YYYY-MM-DD" name="date_due" value="{{ thistask['date_due'] }}" />
+          <input class="form-control" type="date" placeholder="YYYY-MM-DD" name="date_due" value="{{ thistask['date_due'] }}" />
           <br>
           <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
         </form>

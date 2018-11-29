@@ -190,7 +190,7 @@ def newtask(pid):
         title = request.form['title']
         date_due = request.form['date_due']
         description = request.form['description']
-        status = 'new'  # static for now, but may be set from the form later
+        status = request.form['status'] 
 
         error = None
         # TODO: add validation
