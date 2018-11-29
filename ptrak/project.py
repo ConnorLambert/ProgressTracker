@@ -206,20 +206,77 @@ def newtask(pid):
 
     return render_template('project/newtask.html')
 
-@bp.route('/<int:pid>/edit')
+@bp.route('/<int:pid>/edit', methods=('GET', 'POST'))
 @login_required(level=3)
 def edit(pid):
     dbcursor = get_db().cursor()
     # involvement check: is the user actually assigned to this project?
+    # and is (s)he at least project manager?
     res = dbcursor.execute(
-        'SELECT * FROM Involvements WHERE pid=(%s) AND uid=(%s)',
+        'SELECT * FROM Involvements WHERE pid=(%s) AND uid=(%s)'
+        ' AND rank > 1',
         (pid, session['uid'],)
     )
     if not res:
-        flash('You aren\'t involved in that project.', category='warning')
-        return redirect(url_for('my.dashboard'))
+        flash('You don\'t have permission to edit that project.', category='warning')
+        return redirect(url_for('project.project', pid=pid))
 
-    return 'STUB: editing project {}'.format(pid)
+
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        date_due = request.form['date_due']
+        toremove = request.form.getlist('toremove')
+        toadd = request.form.getlist('toadd')
+
+        # commit changes
+        dbcursor.execute(
+            'UPDATE Projects SET title=%s, description=%s, date_due=%s'
+            ' WHERE pid=%s',
+            (title, description, date_due, pid,)
+        )
+
+        # add new users (as rank 1!)
+        for uid in toadd:
+            dbcursor.execute(
+                'INSERT INTO Involvements (uid, pid, rank)'
+                ' VALUES (%s, %s, %s)',
+                (uid, pid, 1)
+            )
+        # remove old users
+        for uid in toremove:
+            dbcursor.execute(
+                'DELETE FROM Involvements WHERE uid=%s AND pid=%s',
+                (uid, pid,)
+            )
+
+        return redirect(url_for('project.project', pid=pid))
+
+    dbcursor.execute(
+        'SELECT * FROM Projects WHERE pid=%s',
+        (pid,)
+    )
+    thisproject = dbcursor.fetchone()
+
+    # get info for users currently involved in this project
+    dbcursor.execute(
+        'SELECT firstname, lastname, uid, email'
+        ' FROM Users NATURAL JOIN Involvements'
+        ' WHERE pid=%s',
+        (pid,)
+    )
+    projectteam = dbcursor.fetchall()
+
+    # get info for users who aren't currently involved in this project
+    dbcursor.execute(
+        'SELECT firstname, lastname, uid, email'
+        ' FROM Users WHERE uid NOT IN'
+        ' (SELECT uid FROM Involvements WHERE pid=%s)',
+        (pid,)
+    )
+    otherusers = dbcursor.fetchall()
+
+    return render_template('project/edit.html', thisproject=thisproject, projectteam=projectteam, otherusers=otherusers)
 
 @bp.route('/<int:pid>/announce', methods=('GET', 'POST'))
 @login_required(level=3)

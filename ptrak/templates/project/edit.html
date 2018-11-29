@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+      <h1>{% block title %} Edit Project {% endblock %}</h1>
+        <form action="" method="post">
+          <label for="title">Project title</label>
+          <input class="form-control" type="text" placeholder="Project title" name="title" value="{{ thisproject['title'] }}" />
+          <label for="description">Description</label>
+          <textarea class="form-control" placeholder="Description" name="description" rows="8" cols="30">{{ thisproject['description'] }}</textarea>
+          <label for="date_due">Due date</label>
+          <input class="form-control" type="text" placeholder="YYYY-MM-DD" name="date_due" value="{{ thisproject['date_due'] }}" />
+          <label for="toremove">Remove users</label>
+          <select class="form-control" name="toremove" multiple>
+            {% for user in projectteam %}
+            <option value="{{ user.uid }}">{{ demystify(user.firstname)+' '+demystify(user.lastname)+' ('+demystify(user.email)+')' }} </option>
+            {% endfor %}
+          </select>
+          <label for="toadd">Add users</label>
+          <select class="form-control" name="toadd" multiple>
+            {% for user in otherusers %}
+            <option value="{{ user.uid }}">{{ demystify(user.firstname)+' '+demystify(user.lastname)+' ('+demystify(user.email)+')' }} </option>
+            {% endfor %}
+          </select>
+          <br>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
+        </form>
+    </div>
+{% endblock %}
