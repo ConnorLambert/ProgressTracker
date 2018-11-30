@@ -118,7 +118,7 @@ def dashboard():
     if userProjects is None:
         error = 'User belongs to no projects!'
         flash(error, category='danger')
-        return redirect(url_for('testindex'))
+        return redirect(url_for('my.messages'))
 
     # I don't...I don't really want to think too much about this one.
     # This beastly query gets 5 of the most recent announcements
