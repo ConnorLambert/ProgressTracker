@@ -170,7 +170,7 @@ def resetPwd():
                     (generate_password_hash(password1), session['uid'])
                 )
                 flash('Password successfully reset!', category='success')
-                return redirect(url_for('testindex'))
+                return redirect(url_for('my.dashboard'))
             flash(error, category='warning')
         return render_template('user/resetPwd.html')
 
