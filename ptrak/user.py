@@ -177,7 +177,7 @@ def resetPwd():
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('testindex'))
+    return redirect(url_for('user.login'))
 
 @bp.route('/new', methods=('GET', 'POST'))
 @login_required(level=3)

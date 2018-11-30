@@ -70,6 +70,7 @@ def create_app(test_config=None):
 
         @app.route('/')
         def testindex():
+            return redirect(url_for('user.login'))
             try:
                 return render_template('index.html', email=session['user'])
             except:
